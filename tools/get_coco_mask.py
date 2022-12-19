@@ -31,12 +31,12 @@ def main(args):
         img = coco.loadImgs(imgId)[0]
         annIds = coco.getAnnIds(imgIds=img['id'], catIds=catIds, iscrowd=None)
         anns = coco.loadAnns(annIds)
-        # anns = sorted(anns, key=lambda idx: idx['area'], reverse=True)
+        anns = sorted(anns, key=lambda idx: idx['area'], reverse=True)
         if len(annIds) > 0:
             mask = coco.annToMask(anns[0]) * anns[0]['category_id']
             for i in range(len(anns) - 1):
-                # mask[coco.annToMask(anns[i+1]) == 1] = anns[i+1]['category_id']
-                mask += coco.annToMask(anns[i + 1]) * anns[i + 1]['category_id']
+                mask[coco.annToMask(anns[i+1]) == 1] = anns[i+1]['category_id']
+                # mask += coco.annToMask(anns[i + 1]) * anns[i + 1]['category_id']
             img_origin_path = os.path.join(args.input_dir, img['file_name'])
             img_output_path = os.path.join(args.input_dir, 'copy_paste/images', f'{index:04}.jpg')
             seg_output_path = os.path.join(args.input_dir, 'copy_paste/annotations', f'{index:04}.png')
