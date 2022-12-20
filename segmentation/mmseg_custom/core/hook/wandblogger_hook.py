@@ -89,6 +89,7 @@ class MMSegWandbHook(WandbLoggerHook):
                  log_checkpoint=False,
                  log_checkpoint_metadata=False,
                  num_eval_images=100,
+                 configs=None,
                  **kwargs):
         super(MMSegWandbHook, self).__init__(init_kwargs, interval, **kwargs)
 
@@ -100,6 +101,7 @@ class MMSegWandbHook(WandbLoggerHook):
         self.ckpt_hook: CheckpointHook = None
         self.eval_hook: EvalHook = None
         self.test_fn = None
+        self.configs = configs
 
     @master_only
     def before_run(self, runner):
@@ -117,6 +119,10 @@ class MMSegWandbHook(WandbLoggerHook):
                 from mmseg.apis import multi_gpu_test
                 self.eval_hook = hook
                 self.test_fn = multi_gpu_test
+                
+        # Upload configs
+        if self.configs:
+            self.wandb.config.update(self.configs)
 
         # Check conditions to log checkpoint
         if self.log_checkpoint:

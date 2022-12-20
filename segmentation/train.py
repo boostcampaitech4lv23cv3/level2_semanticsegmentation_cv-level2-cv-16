@@ -225,6 +225,7 @@ def main():
                  init_kwargs=dict(project='Trash_Seg', 
                                   entity='jjhun1228', 
                                   name=f'{args.exp_name}'),
+                 configs=args,
                  interval=50,
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True)
