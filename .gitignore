@@ -1,2 +1,7 @@
 .venv
 pytorch-image-models/
+EVA/
+
+
+detection/
+segmentation/
