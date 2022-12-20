@@ -19,24 +19,33 @@ selfos = platform.system()
 model_dir = 'convnext'
 model_name = 'upernet_convnext_tiny_fp16_512x512_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
+data_root = '../../data'
 
-
-def train():
+def train(k_fold):
 
     # config file 들고오기
     cfg = Config.fromfile(f'./configs/_TrashSEG_/{model_dir}/{model_name}.py')
 
+    #get k_fold
+    cfg.data.train.img_dir = data_root + f'/images/train_{k_fold}'
+    cfg.data.train.ann_dir = data_root + f'/annotations/train_{k_fold}'
+    cfg.data.val.img_dir   = data_root + f'/images/val_{k_fold}'
+    cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
+    
     cfg.data.workers_per_gpu = 8 #num_workers
-    cfg.data.samples_per_gpu = 4
+    cfg.data.samples_per_gpu = 8
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
-    cfg.work_dir = work_dir
+    cfg.work_dir = work_dir+f'_{k_fold}'
 
     cfg.evaluation = dict(
         interval=1, 
         start=1,
-        save_best='auto' 
+        #save_best='auto' => get acc
+        metric = 'mIoU',
+        save_best = 'mIoU',
+        pre_eval=True
     )
     
     
@@ -50,10 +59,16 @@ def train():
             #dict(type='ImageDetection'),
             #dict(type='TensorboardLoggerHook')
             #dict(type='CustomSweepHook')
-            #dict(type='MMSegWandbHook', by_epoch=False) # The Wandb logger is also supported, It requires `wandb` to be installed.
-            #     init_kwargs={'entity': "revanZX", # The entity used to log on Wandb
-            #                  'project': "MMSeg", # Project name in WandB
-            #                  'config': cfg_dict}), # Check https://docs.wandb.ai/ref/python/init for more init arguments.
+            dict(type='MMSegWandbHook', 
+                 init_kwargs=dict(project='Trash_Seg', 
+                                  entity='revanZX', 
+                                  name=f'{model_name}_{k_fold}'),
+                 interval=100, 
+                 log_checkpoint=False, 
+                 log_checkpoint_metadata=True,
+                 #num_eval_image = 10
+            )
+
     ])
     
     cfg.device = get_device()
@@ -77,5 +92,5 @@ def train():
 if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
-    
-    train()
+    #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
+    train(0)
