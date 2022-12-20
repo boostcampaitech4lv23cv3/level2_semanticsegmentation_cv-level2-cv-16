@@ -1,7 +1,7 @@
 # Copyright (c) Shanghai AI Lab. All rights reserved.
 _base_ = [
     './models/mask2former_beit_cocostuff.py',
-    './datasets/trash-base.py',
+    './datasets/trash-base_fold0.py',
     './default_runtime.py',
     './schedules/schedule_20k.py'
 ]
