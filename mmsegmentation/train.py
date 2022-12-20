@@ -68,7 +68,6 @@ def train(k_fold):
                  log_checkpoint_metadata=True,
                  #num_eval_image = 10
             )
-
     ])
     
     cfg.device = get_device()
