@@ -16,8 +16,8 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'convnext'
-model_name = 'upernet_convnext_xlarge_fp16_640x640_160k_ade20k'
+model_dir = 'convnext_fb'
+model_name = 'upernet_convnext_xlarge_640_160k_ade20k_ms'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
