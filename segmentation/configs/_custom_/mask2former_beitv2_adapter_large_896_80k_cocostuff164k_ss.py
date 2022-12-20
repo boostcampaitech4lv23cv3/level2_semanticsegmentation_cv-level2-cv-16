@@ -1,9 +1,9 @@
 # Copyright (c) Shanghai AI Lab. All rights reserved.
 _base_ = [
     './models/mask2former_beit_cocostuff.py',
-    './datasets/trash-base.py',
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_80k.py'
+    './datasets/trash-base_fold0.py',
+    './default_runtime.py',
+    './schedules/schedule_20k.py'
 ]
 crop_size = (896, 896)
 pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beitv2/beitv2_large_patch16_224_pt1k_ft21k.pth'
@@ -149,5 +149,5 @@ data = dict(samples_per_gpu=1,
             val=dict(pipeline=test_pipeline),
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
-checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
-evaluation = dict(interval=8000, metric='mIoU', save_best='mIoU')
+checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=1)
+evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')

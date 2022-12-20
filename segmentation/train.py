@@ -29,6 +29,10 @@ def parse_args():
         default=MyConfig.config,
         help='train config file path')
     parser.add_argument(
+        '--exp_name', 
+        default=MyConfig.exp_name, 
+        help='wandb exp name')
+    parser.add_argument(
         '--work_dir', 
         default=MyConfig.work_dir, 
         help='the dir to save logs and models')
@@ -209,6 +213,23 @@ def main():
         model = revert_sync_batchnorm(model)
 
     logger.info(model)
+    
+    cfg.log_config = dict(
+        interval=50,
+        hooks=[
+            dict(type='TextLoggerHook'),
+            #dict(type='ImageDetection'),
+            #dict(type='TensorboardLoggerHook')
+            #dict(type='CustomSweepHook')
+            dict(type='MMSegWandbHook', 
+                 init_kwargs=dict(project='Trash_Seg', 
+                                  entity='jjhun1228', 
+                                  name=f'{args.exp_name}'),
+                 configs=args,
+                 interval=50,
+                 log_checkpoint=False, 
+                 log_checkpoint_metadata=True)
+        ])
 
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:
