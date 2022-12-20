@@ -1,7 +1,8 @@
 class Config:
     config='./configs/_custom_/mask2former_beitv2_adapter_large_896_80k_cocostuff164k_ss.py'
-    work_dir='./work_dirs/exp01'
-    load_from=None
+    exp_name='beitv2_adapter_large_fold0'
+    work_dir=f'./work_dirs/{exp_name}'
+    load_from='./weights/mask2former_beitv2_adapter_large_896_80k_cocostuff164k.pth'
     resume_from=None
     no_validate=None
     gpus=None

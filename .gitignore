@@ -159,5 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-detection/
-segmentation/
+segmentation/weights/
+segmentation/work_dirs/
+segmentation/wandb/
+segmentation/artifacts/
