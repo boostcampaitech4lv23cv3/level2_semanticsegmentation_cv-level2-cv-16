@@ -16,8 +16,8 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'convnext_fb'
-model_name = 'upernet_convnext_xlarge_640_160k_ade20k_ms'
+model_dir = 'swin'
+model_name = 'upernet_swin_large_patch4_window7_512x512_pretrain_224x224_22K_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -60,8 +60,8 @@ def train(k_fold):
             #dict(type='TensorboardLoggerHook')
             #dict(type='CustomSweepHook')
             dict(type='MMSegWandbHook', 
-                 init_kwargs=dict(project='Trash_Seg', 
-                                  entity='revanZX', 
+                 init_kwargs=dict(project='Trash_Segmentation', 
+                                  entity='youngjun04', 
                                   name=f'{model_name}_{k_fold}'),
                  interval=100, 
                  log_checkpoint=False, 
