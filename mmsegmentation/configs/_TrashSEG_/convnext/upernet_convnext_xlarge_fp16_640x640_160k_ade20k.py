@@ -1,10 +1,10 @@
 _base_ = [
     '../_base_/models/upernet_convnext.py',
-    '../_base_/datasets/ade20k_640x640.py', '../_base_/default_runtime.py',
+    '../_base_/datasets/custom_dataset.py', '../_base_/default_runtime.py',
     '../_base_/schedules/schedule_160k.py'
 ]
 crop_size = (640, 640)
-checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-xlarge_3rdparty_in21k_20220301-08aa5ddc.pth'  # noqa
+#checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-xlarge_3rdparty_in21k_20220301-08aa5ddc.pth'  # noqa
 model = dict(
     backbone=dict(
         type='mmcls.ConvNeXt',
@@ -13,9 +13,10 @@ model = dict(
         drop_path_rate=0.4,
         layer_scale_init_value=1.0,
         gap_before_final_norm=False,
-        init_cfg=dict(
-            type='Pretrained', checkpoint=checkpoint_file,
-            prefix='backbone.')),
+        #init_cfg=dict(
+        #    type='Pretrained', checkpoint=checkpoint_file,
+        #    prefix='backbone.')),
+    ),
     decode_head=dict(
         in_channels=[256, 512, 1024, 2048],
         num_classes=150,
@@ -53,3 +54,5 @@ data = dict(samples_per_gpu=2)
 optimizer_config = dict(type='Fp16OptimizerHook', loss_scale='dynamic')
 # fp16 placeholder
 fp16 = dict()
+
+load_from = './pretrained_models/upernet_convnext_xlarge_22k_640x640.pth'

@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 segmentation/weights/
+segmentation/work_dirs/

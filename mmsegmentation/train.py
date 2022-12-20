@@ -17,7 +17,7 @@ from mmcv.runner.hooks import HOOKS, Hook
 selfos = platform.system() 
 
 model_dir = 'convnext'
-model_name = 'upernet_convnext_tiny_fp16_512x512_160k_ade20k'
+model_name = 'upernet_convnext_xlarge_fp16_640x640_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -32,8 +32,8 @@ def train(k_fold):
     cfg.data.val.img_dir   = data_root + f'/images/val_{k_fold}'
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
-    cfg.data.workers_per_gpu = 8 #num_workers
-    cfg.data.samples_per_gpu = 8
+    cfg.data.workers_per_gpu = 4 #num_workers
+    cfg.data.samples_per_gpu = 4
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
@@ -45,7 +45,7 @@ def train(k_fold):
         #save_best='auto' => get acc
         metric = 'mIoU',
         save_best = 'mIoU',
-        pre_eval=True
+        pre_eval = True
     )
     
     
@@ -72,7 +72,7 @@ def train(k_fold):
     ])
     
     cfg.device = get_device()
-    cfg.runner = dict(type='EpochBasedRunner', max_epochs=20)
+    cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
     #cfg.load_from = './work_dirs/dyhead/best_bbox_mAP_50_epoch_12.pth'
     # build_dataset
     datasets = [build_dataset(cfg.data.train)]
