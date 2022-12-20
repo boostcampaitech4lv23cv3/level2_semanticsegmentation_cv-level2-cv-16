@@ -1,5 +1,5 @@
 # model settings
-norm_cfg = dict(type='SyncBN', requires_grad=True)
+norm_cfg = dict(type='BN', requires_grad=True)
 backbone_norm_cfg = dict(type='LN', requires_grad=True)
 model = dict(
     type='EncoderDecoder',
@@ -31,7 +31,7 @@ model = dict(
         pool_scales=(1, 2, 3, 6),
         channels=512,
         dropout_ratio=0.1,
-        num_classes=19,
+        num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
         loss_decode=dict(
@@ -44,7 +44,7 @@ model = dict(
         num_convs=1,
         concat_input=False,
         dropout_ratio=0.1,
-        num_classes=19,
+        num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
         loss_decode=dict(
