@@ -1,6 +1,6 @@
 _base_ = [
     '../_base_/models/upernet_convnext.py',
-    '../_base_/datasets/ade20k_640x640.py', '../_base_/default_runtime.py',
+    '../_base_/datasets/custom_dataset.py', '../_base_/default_runtime.py',
     '../_base_/schedules/schedule_160k.py'
 ]
 crop_size = (640, 640)
@@ -18,8 +18,7 @@ model = dict(
             prefix='backbone.')),
     decode_head=dict(
         in_channels=[256, 512, 1024, 2048],
-        num_classes=150,
-    ),
+        num_classes=150,),
     auxiliary_head=dict(in_channels=1024, num_classes=150),
     test_cfg=dict(mode='slide', crop_size=crop_size, stride=(426, 426)),
 )
@@ -53,3 +52,5 @@ data = dict(samples_per_gpu=2)
 optimizer_config = dict(type='Fp16OptimizerHook', loss_scale='dynamic')
 # fp16 placeholder
 fp16 = dict()
+
+load_from = './pretrained_models/upernet_convnext_xlarge_22k_640x640.pth'

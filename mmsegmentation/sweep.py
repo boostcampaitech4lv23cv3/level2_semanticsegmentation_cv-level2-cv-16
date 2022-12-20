@@ -4,7 +4,7 @@ from mmcv import Config
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.apis import train_segmentor
-from mmseg.datasets import (build_dataloader, build_dataset, replace_ImageToTensor)
+from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
 
@@ -46,17 +46,17 @@ def train():
                "Plastic", "Styrofoam", "Plastic bag", "Battery", "Clothing")
 
     # config file 들고오기
-    cfg = Config.fromfile(f'./configs/_trashDet_/{model_dir}/{model_name}.py')
+    cfg = Config.fromfile(f'./configs/_TrashSEG_/{model_dir}/{model_name}.py')
 
-    root='../../dataset/'
+    root='../../data'
     # dataset config 수정
     cfg.data.train.classes = classes
     cfg.data.train.img_prefix = root
-    cfg.data.train.ann_file = root + f'train_{k_fold}.json' # train json 정보
+    cfg.data.train.ann_file = root + 'train.json' #f'train_{k_fold}.json' # train json 정보
     
     cfg.data.val.classes = classes
     cfg.data.val.img_prefix = root
-    cfg.data.val.ann_file = root + f'val_{k_fold}.json'
+    cfg.data.val.ann_file = root + 'val.json' #f'val_{k_fold}.json'
    
     cfg.data.test.classes = classes
     cfg.data.test.img_prefix = root
@@ -75,7 +75,7 @@ def train():
 
     cfg.seed = w_config.seed
     cfg.gpu_ids = [0]
-    cfg.work_dir = work_dir + f'_{k_fold}'
+    cfg.work_dir = work_dir
 
     cfg.evaluation = dict(
         interval=1, 
@@ -94,7 +94,7 @@ def train():
             constructor='LearningRateDecayOptimizerConstructor',
             _delete_=True,
             type='AdamW',
-            lr=0.0001,
+            lr=w_config.learning_rate,
             betas=(0.9, 0.999),
             weight_decay=0.05,
             paramwise_cfg={
@@ -106,7 +106,7 @@ def train():
         cfg.optimizer = dict(
             _delete_=True, 
             type='SGD', 
-            lr=0.01, 
+            lr=w_config.learning_rate, 
             momentum=0.9, 
             weight_decay=0.0005
         )
