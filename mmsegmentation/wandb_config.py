@@ -19,7 +19,7 @@ sweep_config = {
     'name' : 'convnext_test',
     'method': 'bayes',
     'metric' : {
-        'name': 'mIoU',
+        'name': 'val/mIoU',
         'goal': 'maximize'   
     },
     'parameters' : {

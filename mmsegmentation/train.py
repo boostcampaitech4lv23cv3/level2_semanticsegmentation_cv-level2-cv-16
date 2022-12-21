@@ -4,7 +4,6 @@ from mmcv import Config
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.apis import train_segmentor
-from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
 
@@ -51,7 +50,7 @@ def train(k_fold):
     
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
-    cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
+    cfg.checkpoint_config = dict(None)#dict(max_keep_ckpts=3, interval=1)
     cfg.log_config = dict(
         interval=50,
         hooks=[
@@ -66,7 +65,7 @@ def train(k_fold):
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-                 #num_eval_image = 10
+                 num_eval_image = 10
             )
     ])
     

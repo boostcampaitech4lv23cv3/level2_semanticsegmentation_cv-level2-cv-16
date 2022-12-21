@@ -49,7 +49,7 @@ def train():
         start=1,
         #save_best='auto' => get acc
         metric = 'mIoU',
-        save_best = 'mIoU',
+        #save_best = 'mIoU',
         pre_eval = True
     )
     
@@ -106,7 +106,7 @@ def train():
             min_lr=1e-07
         )
         
-    cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
+    cfg.checkpoint_config = dict(max_keep_ckpts=2, interval=1)
     cfg.log_config = dict(
         interval=50,
         hooks=[
