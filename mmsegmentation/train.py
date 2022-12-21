@@ -17,7 +17,7 @@ from mmcv.runner.hooks import HOOKS, Hook
 selfos = platform.system() 
 
 model_dir = 'swin'
-model_name = 'upernet_swin_large_patch4_window7_512x512_pretrain_224x224_22K_160k_ade20k'
+model_name = 'upernet_swin_large_patch4_window12_512x512_pretrain_384x384_22K_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -62,11 +62,11 @@ def train(k_fold):
             dict(type='MMSegWandbHook', 
                  init_kwargs=dict(project='Trash_Segmentation', 
                                   entity='youngjun04', 
-                                  name=f'{model_name}_{k_fold}'),
+                                  name=f'{model_name}_{k_fold}_step'),
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-                 #num_eval_image = 10
+                #  num_eval_image = 50
             )
     ])
     
