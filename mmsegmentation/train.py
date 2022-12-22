@@ -37,7 +37,7 @@ def train(k_fold):
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
-    cfg.work_dir = work_dir+f'_{k_fold}'
+    cfg.work_dir = work_dir+f'_{k_fold}_2'
 
     cfg.evaluation = dict(
         interval=1, 
@@ -62,7 +62,7 @@ def train(k_fold):
             dict(type='MMSegWandbHook', 
                  init_kwargs=dict(project='Trash_Segmentation', 
                                   entity='youngjun04', 
-                                  name=f'{model_name}_{k_fold}_step'),
+                                  name=f'{model_name}_{k_fold}_step_2'),
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,

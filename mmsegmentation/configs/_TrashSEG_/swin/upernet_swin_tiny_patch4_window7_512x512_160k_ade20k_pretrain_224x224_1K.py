@@ -34,9 +34,9 @@ lr_config = dict(
     _delete_=True,
     policy='step',
     warmup='linear',
-    warmup_iters=200,
+    warmup_iters=2000,
     warmup_ratio=0.001,
-    step=[8, 11, 27, 33])
+    step=[15, 30, 45, 60])
 
 # optimizer = dict(
 #     _delete_=True,

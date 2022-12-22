@@ -16,7 +16,7 @@ hyperparameter_defaults  = {
 }
 
 sweep_config = {
-    'name' : 'convnext_test',
+    'name' : 'swin_large',
     'method': 'bayes',
     'metric' : {
         'name': 'mIoU',
