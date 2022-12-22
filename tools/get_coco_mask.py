@@ -19,10 +19,12 @@ def save_colored_mask(mask, save_path):
     lbl_pil.save(save_path)
 
  
-def main(args):
-    annotation_file = os.path.join(args.input_dir, '{}.json'.format(args.split))
-    os.makedirs(os.path.join(args.input_dir, 'copy_paste/images'), exist_ok=True)
-    os.makedirs(os.path.join(args.input_dir, 'copy_paste/annotations'), exist_ok=True)
+def main(args, k, split):
+    
+    annotation_file = os.path.join(args.input_dir, 'stratified_group_kfold',f'{split}_fold{k}.json')
+    t_split = split
+    os.makedirs(os.path.join(args.input_dir, 'images', f'{t_split}_{k}'), exist_ok=True)
+    os.makedirs(os.path.join(args.input_dir, 'annotations', f'{t_split}_{k}'), exist_ok=True)
     coco = COCO(annotation_file)
     catIds = coco.getCatIds()
     imgIds = coco.getImgIds()
@@ -38,21 +40,23 @@ def main(args):
                 mask[coco.annToMask(anns[i+1]) == 1] = anns[i+1]['category_id']
                 # mask += coco.annToMask(anns[i + 1]) * anns[i + 1]['category_id']
             img_origin_path = os.path.join(args.input_dir, img['file_name'])
-            img_output_path = os.path.join(args.input_dir, 'copy_paste/images', f'{index:04}.jpg')
-            seg_output_path = os.path.join(args.input_dir, 'copy_paste/annotations', f'{index:04}.png')
+            img_output_path = os.path.join(args.input_dir, 'images', f'{t_split}_{k}', f'{index:04}.jpg')
+            seg_output_path = os.path.join(args.input_dir, 'annotations', f'{t_split}_{k}', f'{index:04}.png')
             shutil.copy(img_origin_path, img_output_path)
             save_colored_mask(mask, seg_output_path)
  
  
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", default="/opt/ml/input/data", type=str,
+    parser.add_argument("--input_dir", default='../../data', type=str,
                         help="coco dataset directory")
-    parser.add_argument("--split", default="train", type=str,
-                        help="train2017 or val2017")
+    #parser.add_argument("--split", default="train", type=str,
+    #                    help="train or val")
     return parser.parse_args()
  
  
 if __name__ == '__main__':
     args = get_args()
-    main(args)
+    for k in range(5):
+        for split in ['train', 'val']:
+            main(args, k, split)
