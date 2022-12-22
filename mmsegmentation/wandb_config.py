@@ -4,6 +4,7 @@ from torchvision import transforms
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+"""
 hyperparameter_defaults  = {
         'epochs': 1,
         'batch_size': 1,
@@ -50,7 +51,7 @@ sweep_config = {
         'max_iter': 27,
     },
 }
-
 train_transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.1307,), (0.3081,))])
+"""        

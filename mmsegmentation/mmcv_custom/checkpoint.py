@@ -219,6 +219,7 @@ def get_deprecated_model_names():
 def _process_mmcls_checkpoint(checkpoint):
     state_dict = checkpoint['state_dict']
     new_state_dict = OrderedDict()
+    
     for k, v in state_dict.items():
         if k.startswith('backbone.'):
             new_state_dict[k[9:]] = v
@@ -285,6 +286,8 @@ def _load_checkpoint(filename, map_location=None):
         if not osp.isfile(filename):
             raise IOError(f'{filename} is not a checkpoint file')
         checkpoint = torch.load(filename, map_location=map_location)
+        if isinstance(checkpoint, OrderedDict):
+            checkpoint = _process_mmcls_checkpoint(checkpoint)
     return checkpoint
 
 

@@ -215,7 +215,7 @@ def _test_encoder_decoder_forward(cfg_file):
 
     # convert to cuda Tensor if applicable
     if torch.cuda.is_available():
-        segmentor = segmentor.cuda().half
+        segmentor = segmentor.cuda()
         imgs = imgs.cuda()
         gt_semantic_seg = gt_semantic_seg.cuda()
     else:

@@ -10,19 +10,19 @@ _base_ = [
     '../_base_/default_runtime.py',
     '../_base_/schedules/schedule_60k.py'
 ]
-crop_size = (896, 896)
-pretrained = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/ade20k/eva_psz14to16.pt'
-load_from = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/coco_stuff164k/eva_sem_seg_mask2former_cocostuff_53p4.pth'
+crop_size = (512, 512) ################################# (896, 896)
+#pretrained = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/ade20k/eva_psz14to16.pt'
+pretrained = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/coco_stuff164k/eva_sem_seg_mask2former_cocostuff_53p4.pth'
 
 model = dict(
     type='EncoderDecoderMask2Former',
     pretrained=pretrained,
     backbone=dict(
         type='BEiTAdapter',
-        img_size=896,
+        img_size=512, ################################# 896
         patch_size=16,
         embed_dim=1408,
-        depth=40,
+        depth=5, ################################# 40
         num_heads=16,
         mlp_ratio=6144 / 1408,
         qkv_bias=True,
@@ -35,7 +35,7 @@ model = dict(
         deform_num_heads=16,
         cffn_ratio=0.25,
         deform_ratio=0.5,
-        with_cp=True,  # set with_cp=True to save memory
+        with_cp=False,  # set with_cp=True to save memory
         interaction_indexes=[[0, 9], [10, 19], [20, 29], [30, 39]],
     ),
     decode_head=dict(
@@ -50,13 +50,13 @@ model = dict(
             act_cfg=dict(type='ReLU'),
             encoder=dict(
                 type='DetrTransformerEncoder',
-                num_layers=6,
+                num_layers=2, ################################# 6
                 transformerlayers=dict(
                     type='BaseTransformerLayer',
                     attn_cfgs=dict(
                         type='MultiScaleDeformableAttention',
                         embed_dims=1024,
-                        num_heads=32,
+                        num_heads=4, ################################# 32
                         num_levels=3,
                         num_points=4,
                         im2col_step=64,
@@ -70,7 +70,7 @@ model = dict(
                         feedforward_channels=4096,
                         num_fcs=2,
                         ffn_drop=0.0,
-                        with_cp=True,  # set with_cp=True to save memory
+                        with_cp=False,  # set with_cp=True to save memory
                         act_cfg=dict(type='ReLU', inplace=True)),
                     operation_order=('self_attn', 'norm', 'ffn', 'norm')),
                 init_cfg=None),
@@ -82,13 +82,13 @@ model = dict(
         transformer_decoder=dict(
             type='DetrTransformerDecoder',
             return_intermediate=True,
-            num_layers=8,
+            num_layers=2, ################################# 8
             transformerlayers=dict(
                 type='DetrTransformerDecoderLayer',
                 attn_cfgs=dict(
                     type='MultiheadAttention',
                     embed_dims=1024,
-                    num_heads=32,
+                    num_heads=4, ################################# 32
                     attn_drop=0.0,
                     proj_drop=0.0,
                     dropout_layer=None,
@@ -100,7 +100,7 @@ model = dict(
                     act_cfg=dict(type='ReLU', inplace=True),
                     ffn_drop=0.0,
                     dropout_layer=None,
-                    with_cp=True,  # set with_cp=True to save memory
+                    with_cp=False,  # set with_cp=True to save memory
                     add_identity=True),
                 feedforward_channels=4096,
                 operation_order=('cross_attn', 'norm', 'self_attn', 'norm',
