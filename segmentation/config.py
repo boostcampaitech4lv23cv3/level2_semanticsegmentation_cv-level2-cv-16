@@ -1,8 +1,8 @@
 class Config:
-    config='./configs/_custom_/mask2former_beitv2_adapter_large_896_80k_cocostuff164k_ss.py'
-    exp_name='beitv2_adapter_large_fold0'
+    config='./configs/_custom_/mask2former_beitv2_adapter_large_896_80k_ade20k_ms.py'
+    exp_name='mask2former_beitv2_adapter_large_ADE20K'
     work_dir=f'./work_dirs/{exp_name}'
-    load_from='./weights/mask2former_beitv2_adapter_large_896_80k_cocostuff164k.pth'
+    load_from='./pretrained/mask2former_beitv2_adapter_large_896_80k_ade20k.pth'
     resume_from=None
     no_validate=None
     gpus=None
@@ -14,3 +14,4 @@ class Config:
     launcher='none'
     local_rank=0
     auto_resume=None
+    device='cuda'

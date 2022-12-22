@@ -110,6 +110,7 @@ def parse_args():
         action='store_true', 
         default=MyConfig.auto_resume, 
         help='resume from the latest checkpoint automatically.')
+
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -222,8 +223,8 @@ def main():
             #dict(type='TensorboardLoggerHook')
             #dict(type='CustomSweepHook')
             dict(type='MMSegWandbHook', 
-                 init_kwargs=dict(project='Trash_Seg', 
-                                  entity='jjhun1228', 
+                 init_kwargs=dict(project='semantic segmentation', 
+                                  entity='arislid', 
                                   name=f'{args.exp_name}'),
                  configs=args,
                  interval=50,
