@@ -1,9 +1,9 @@
 # Copyright (c) Shanghai AI Lab. All rights reserved.
 _base_ = [
-    '../_custom_/models/mask2former_beit_pascal.py',
-    '../_custom_/datasets/trash-base_fold0.py',
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_40k.py'
+    './models/mask2former_beit_pascal.py',
+    './datasets/trash-base_fold0.py',
+    './default_runtime.py',
+    './schedules/schedule_40k.py'
 ]
 crop_size = (480, 480)
 img_scale = (520, 520)
@@ -124,11 +124,11 @@ test_pipeline = [
     dict(
         type='MultiScaleFlipAug',
         img_scale=(4096, 520),
-        # img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
-        flip=False,
+        img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
+        flip=True,
         transforms=[
-            dict(type='Resize', keep_ratio=True),
-            dict(type='ResizeToMultiple', size_divisor=32),
+            dict(type='SETR_Resize', keep_ratio=True,
+                 crop_size=crop_size, setr_multi_scale=True),
             dict(type='RandomFlip'),
             dict(type='Normalize', **img_norm_cfg),
             dict(type='ImageToTensor', keys=['img']),
@@ -144,10 +144,10 @@ lr_config = dict(_delete_=True,
                  warmup_iters=1500,
                  warmup_ratio=1e-6,
                  power=1.0, min_lr=0.0, by_epoch=False)
-data = dict(samples_per_gpu=4,
+data = dict(samples_per_gpu=2,
             train=dict(pipeline=train_pipeline),
             val=dict(pipeline=test_pipeline),
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
-checkpoint_config = dict(by_epoch=False, interval=2000, max_keep_ckpts=1)
-evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')
+checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
+evaluation = dict(interval=1000, metric='mIoU', save_best='mIoU')

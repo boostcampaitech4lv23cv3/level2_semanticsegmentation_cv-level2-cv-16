@@ -163,3 +163,4 @@ segmentation/weights/
 segmentation/work_dirs/
 segmentation/wandb/
 segmentation/artifacts/
+segmentation/pretrained/

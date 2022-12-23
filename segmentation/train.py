@@ -18,6 +18,7 @@ from mmseg.apis import init_random_seed, set_random_seed, train_segmentor
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.utils import collect_env, get_root_logger
+from mmseg_custom.core.hook.wandblogger_hook import MMSegWandbHook
 
 from config import Config as MyConfig
 
