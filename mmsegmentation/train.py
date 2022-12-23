@@ -16,7 +16,7 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'convnext'
+model_dir = 'segformer'
 model_name = 'upernet_convnext_xlarge_fp16_640x640_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
@@ -66,9 +66,8 @@ def train(k_fold):
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-                 #num_eval_image = 10
+                 num_eval_image = 10
             )
-
     ])
     
     cfg.device = get_device()

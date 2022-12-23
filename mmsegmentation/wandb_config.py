@@ -5,10 +5,11 @@ from torchvision import transforms
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 hyperparameter_defaults  = {
-        'epochs': 2,
-        'batch_size': 2,
+        'epochs': 6,
+        'batch_size': 1,
         'weight_decay': 0.0005,
         'optimizer': 'AdamW',
+        'scheduler': 'poly',
         'learning_rate': 1e-3,
         'seed': 24,
         'k_fold' : 0
@@ -18,8 +19,8 @@ sweep_config = {
     'name' : 'convnext_test',
     'method': 'bayes',
     'metric' : {
-        'name': 'loss',
-        'goal': 'minimize'   
+        'name': 'val/mIoU',
+        'goal': 'maximize'   
     },
     'parameters' : {
         'epochs': {
@@ -34,11 +35,14 @@ sweep_config = {
         'optimizer': {
             'values': ['AdamW', 'SGD']
         },
-        'learning_rate': {
-            'distribution': 'uniform',
-            'min': 0,
-            'max': 0.1
+        'scheduler':{
+            'values':['poly','Step', 'Cosine']
         },
+        #'learning_rate': {
+        #    'distribution': 'uniform',
+        #    'min': 0,
+        #    'max': 0.1
+        #},
         'k_fold':{
             'values': [0] #[0,1,2,3,4]
         }
