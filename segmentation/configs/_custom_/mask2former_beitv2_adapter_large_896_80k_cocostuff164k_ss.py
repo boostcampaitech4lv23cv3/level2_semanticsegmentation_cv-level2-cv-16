@@ -3,7 +3,7 @@ _base_ = [
     './models/mask2former_beit_cocostuff.py',
     './datasets/trash-base_fold0.py',
     './default_runtime.py',
-    './schedules/schedule_40k.py'
+    './schedules/schedule_80k.py'
 ]
 crop_size = (896, 896)
 pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beitv2/beitv2_large_patch16_224_pt1k_ft21k.pth'
