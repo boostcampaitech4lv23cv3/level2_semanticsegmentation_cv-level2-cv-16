@@ -1,10 +1,10 @@
-norm_cfg = dict(type='SyncBN', requires_grad=True)
+norm_cfg = dict(type='BN', requires_grad=True)
 model = dict(
     type='EncoderDecoder',
     pretrained=None,
     backbone=dict(
         type='BEiT',
-        img_size=(640, 640),
+        img_size=(512, 512),
         patch_size=16,
         in_channels=3,
         embed_dims=768,
@@ -27,7 +27,7 @@ model = dict(
         pool_scales=(1, 2, 3, 6),
         channels=768,
         dropout_ratio=0.1,
-        num_classes=150,
+        num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
         loss_decode=dict(
@@ -40,7 +40,7 @@ model = dict(
         num_convs=1,
         concat_input=False,
         dropout_ratio=0.1,
-        num_classes=150,
+        num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
         loss_decode=dict(

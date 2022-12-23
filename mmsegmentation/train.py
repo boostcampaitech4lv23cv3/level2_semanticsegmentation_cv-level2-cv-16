@@ -3,7 +3,8 @@ import platform
 from mmcv import Config
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
-from mmseg.apis import train_segmentor
+# from mmseg.apis import train_segmentor
+from mmcv_custom import train_segmentor
 from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
@@ -16,8 +17,8 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'swin'
-model_name = 'upernet_swin_large_patch4_window12_512x512_pretrain_384x384_22K_160k_ade20k'
+model_dir = 'beit_unlim'
+model_name = 'upernet_beit_large_24_512_slide_160k_ade20k_pt2ft'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -33,11 +34,11 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 4
+    cfg.data.samples_per_gpu = 2
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
-    cfg.work_dir = work_dir+f'_{k_fold}_2'
+    cfg.work_dir = work_dir+f'_{k_fold}'
 
     cfg.evaluation = dict(
         interval=1, 
@@ -62,17 +63,17 @@ def train(k_fold):
             dict(type='MMSegWandbHook', 
                  init_kwargs=dict(project='Trash_Segmentation', 
                                   entity='youngjun04', 
-                                  name=f'{model_name}_{k_fold}_step_2'),
+                                  name=f'{model_name}_{k_fold}'),
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-                #  num_eval_image = 50
+                #  num_eval_images = 50
             )
     ])
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
-    #cfg.load_from = './work_dirs/dyhead/best_bbox_mAP_50_epoch_12.pth'
+    cfg.load_from = './configs/_TrashSEG_/beit_unlim/beit_large_patch16_640_pt22k_ft22ktoade20k.pth'
     # build_dataset
     datasets = [build_dataset(cfg.data.train)]
     
