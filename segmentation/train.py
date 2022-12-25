@@ -262,3 +262,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # args = parse_args()
+    # cfg = Config.fromfile(args.config)
+    # print(args.config)

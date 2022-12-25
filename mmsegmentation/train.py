@@ -1,5 +1,13 @@
 # 모듈 import
 import platform
+import copy
+import os
+import os.path as osp
+import time
+import warnings
+
+import mmcv
+import torch
 from mmcv import Config
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
@@ -7,6 +15,13 @@ from mmseg.apis import train_segmentor
 from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
+
+from mmcv.cnn.utils import revert_sync_batchnorm
+from mmcv.runner import get_dist_info, init_dist
+from mmcv.utils import Config, DictAction, get_git_hash
+from mmseg import __version__
+from mmseg.apis import init_random_seed, set_random_seed
+from mmseg.utils import collect_env, get_root_logger
 
 import wandb
 import wandb_config
@@ -17,9 +32,9 @@ from mmcv.runner.hooks import HOOKS, Hook
 selfos = platform.system() 
 
 model_dir = 'segformer'
-model_name = 'upernet_convnext_xlarge_fp16_640x640_160k_ade20k'
+model_name = 'segformer_mit-b5_640x640_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
-data_root = '../../data'
+data_root = '/opt/ml/input/data'
 
 def train(k_fold):
 
@@ -35,7 +50,7 @@ def train(k_fold):
     cfg.data.workers_per_gpu = 4 #num_workers
     cfg.data.samples_per_gpu = 4
 
-    cfg.seed = 24
+    cfg.seed = 42
     cfg.gpu_ids = [0]
     cfg.work_dir = work_dir+f'_{k_fold}'
 
@@ -60,15 +75,17 @@ def train(k_fold):
             #dict(type='TensorboardLoggerHook')
             #dict(type='CustomSweepHook')
             dict(type='MMSegWandbHook', 
-                 init_kwargs=dict(project='Trash_Seg', 
-                                  entity='revanZX', 
+                 init_kwargs=dict(project='semantic segmentation', 
+                                  entity='arislid', 
                                   name=f'{model_name}_{k_fold}'),
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-                 num_eval_image = 10
+                 num_eval_images = 10
             )
     ])
+    
+    
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
@@ -84,12 +101,43 @@ def train(k_fold):
 
     meta = dict()
     #meta['fp16'] = dict(loss_scale=dict(init_scale=512))
+    
+    # create work_dir
+    mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
+    # dump config
+    cfg.dump(osp.join(cfg.work_dir, osp.basename(f'./configs/_TrashSEG_/{model_dir}/{model_name}.py')))
+    # init the logger before other steps
+    timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+    log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
+    logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
+
+    # init the meta dict to record some important information such as
+    # environment info and seed, which will be logged
+    meta = dict()
+    # log env info
+    env_info_dict = collect_env()
+    env_info = '\n'.join([f'{k}: {v}' for k, v in env_info_dict.items()])
+    dash_line = '-' * 60 + '\n'
+    logger.info('Environment info:\n' + dash_line + env_info + '\n' +
+                dash_line)
+    meta['env_info'] = env_info
+
+    # log some basic info
+    logger.info(f'Distributed training: {False}')
+    logger.info(f'Config:\n{cfg.pretty_text}')
+    logger.info(f'Set random seed to {cfg.seed}, '
+                f'deterministic: {None}')
+    
+    logger.info(model)
 
     # 모델 학습
-    train_segmentor(model, datasets, cfg, distributed=False, validate=True, meta=meta)
+    train_segmentor(model, datasets, cfg, distributed=False, validate=True, timestamp=timestamp, meta=meta)
 
 if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
     #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
     train(0)
+    # cfg = Config.fromfile(f'./configs/_TrashSEG_/{model_dir}/{model_name}.py')
+    # print(cfg.checkpoint_config)
+    

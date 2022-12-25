@@ -120,3 +120,4 @@ artifacts/
 
 # Pytorch
 *.pth
+tools/*.pth

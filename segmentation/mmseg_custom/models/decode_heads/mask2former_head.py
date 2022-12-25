@@ -11,6 +11,7 @@ from mmcv.ops import point_sample
 from mmcv.runner import ModuleList, force_fp32
 from mmseg.models.builder import HEADS, build_loss
 from mmseg.models.decode_heads.decode_head import BaseDecodeHead
+from mmseg.models.losses import accuracy
 
 from ...core import build_sampler, multi_apply, reduce_mean
 from ..builder import build_assigner

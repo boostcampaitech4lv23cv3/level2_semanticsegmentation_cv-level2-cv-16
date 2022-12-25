@@ -3,7 +3,7 @@ _base_ = [
     './models/mask2former_beit_pascal.py',
     './datasets/trash-base_fold0.py',
     './default_runtime.py',
-    './schedules/schedule_40k.py'
+    './schedules/schedule_80k.py'
 ]
 crop_size = (480, 480)
 img_scale = (520, 520)
