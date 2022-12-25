@@ -4,6 +4,7 @@ segmentation/wandb
 classification/
 detection/
 mask2former/
+segmentation/artifacts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
