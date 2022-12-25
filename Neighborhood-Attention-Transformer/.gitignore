@@ -5,6 +5,7 @@ classification/
 detection/
 mask2former/
 segmentation/artifacts
+assets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
