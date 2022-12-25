@@ -2,7 +2,7 @@ _base_ = [
     '../_base_/models/upernet_dinat.py', '../_base_/datasets/trash-base_fold0.py',
     '../_base_/default_runtime.py', '../_base_/schedules/schedule_160k.py'
 ]
-pretrained = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/Neighborhood-Attention-Transformer/segmentation/configs/dinat/upernet_dinat_base.pth'
+laod_from = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/Neighborhood-Attention-Transformer/segmentation/configs/dinat/upernet_dinat_base.pth'
 model = dict(
     backbone=dict(
         type='DiNAT',
@@ -14,7 +14,7 @@ model = dict(
         kernel_size=7,
         layer_scale=1e-5,
         dilations=[[1, 16, 1], [1, 4, 1, 8], [1, 2, 1, 3, 1, 4, 1, 2, 1, 3, 1, 4, 1, 2, 1, 3, 1, 4], [1, 2, 1, 2, 1]],
-        pretrained=pretrained,
+        pretrained='',
     ),
     decode_head=dict(
         in_channels=[128, 256, 512, 1024],

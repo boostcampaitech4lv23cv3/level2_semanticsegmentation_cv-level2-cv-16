@@ -3,7 +3,6 @@ _base_ = [
     '../_base_/default_runtime.py', '../_base_/schedules/schedule_160k.py'
 ]
 
-pretrained = '/opt/ml/input/code/level2_semanticsegmentation_cv-level2-cv-16/Neighborhood-Attention-Transformer/segmentation/configs/dinat/upernet_dinat_large.pth'
 model = dict(
     backbone=dict(
         type='DiNAT',
@@ -14,7 +13,7 @@ model = dict(
         kernel_size=7,
         drop_path_rate=0.3,
         dilations=[[1, 20, 1], [1, 5, 1, 10], [1, 2, 1, 3, 1, 4, 1, 5, 1, 2, 1, 3, 1, 4, 1, 5, 1, 5], [1, 2, 1, 2, 1]],
-        pretrained=pretrained,
+        pretrained=None,
     ),
     decode_head=dict(
         in_channels=[192, 384, 768, 1536],
