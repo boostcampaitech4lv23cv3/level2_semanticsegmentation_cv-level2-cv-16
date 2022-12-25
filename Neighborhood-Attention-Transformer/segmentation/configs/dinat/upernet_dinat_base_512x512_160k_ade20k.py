@@ -18,11 +18,11 @@ model = dict(
     ),
     decode_head=dict(
         in_channels=[128, 256, 512, 1024],
-        num_classes=10
+        num_classes=11
     ),
     auxiliary_head=dict(
         in_channels=512,
-        num_classes=10
+        num_classes=11
     ))
 
 # AdamW optimizer

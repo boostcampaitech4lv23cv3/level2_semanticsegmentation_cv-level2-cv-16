@@ -196,7 +196,7 @@ def main():
             'we convert SyncBN to BN. Please use dist_train.sh which can '
             'avoid this error.')
         model = revert_sync_batchnorm(model)
-
+    
     cfg.log_config = dict(
         interval=50,
         hooks=[
@@ -204,14 +204,14 @@ def main():
             #dict(type='ImageDetection'),
             #dict(type='TensorboardLoggerHook')
             #dict(type='CustomSweepHook')
-            dict(type='MMSegWandbHook', 
-                 init_kwargs=dict(project='Trash_Seg', 
-                                  entity='choipp', 
-                                  name=f'{args.exp_name}'),
-                 configs=args,
-                 interval=50,
-                 log_checkpoint=False, 
-                 log_checkpoint_metadata=True)
+            #dict(type='MMSegWandbHook', 
+            #     init_kwargs=dict(project='trash_seg_dinat', 
+            #                      entity='choipp', 
+            #                      name=f'{args.exp_name}'),
+            #     configs=args,
+            #     interval=50,
+            #     log_checkpoint=False, 
+            #     log_checkpoint_metadata=True)
         ])
 
     datasets = [build_dataset(cfg.data.train)]

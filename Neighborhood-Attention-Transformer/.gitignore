@@ -6,6 +6,7 @@ detection/
 mask2former/
 segmentation/artifacts
 assets/
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
