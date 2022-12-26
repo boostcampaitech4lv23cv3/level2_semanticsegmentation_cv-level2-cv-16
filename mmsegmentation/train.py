@@ -3,13 +3,9 @@ import platform
 from mmcv import Config
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
-<<<<<<< HEAD
-# from mmseg.apis import train_segmentor
-from mmcv_custom import train_segmentor
-from mmseg.datasets import (build_dataloader, build_dataset)
-=======
 from mmseg.apis import train_segmentor
->>>>>>> origin/T4073
+# from mmcv_custom import train_segmentor
+from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
 
@@ -21,8 +17,8 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'beit_unlim'
-model_name = 'upernet_beit_large_24_512_slide_160k_ade20k_pt2ft'
+model_dir = 'senformer'
+model_name = 'senformer_fpnt_swin_large_512x512_80k_coco'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -38,7 +34,7 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 2
+    cfg.data.samples_per_gpu = 4
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
@@ -56,7 +52,7 @@ def train(k_fold):
     
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
-    cfg.checkpoint_config = dict(None)#dict(max_keep_ckpts=3, interval=1)
+    # cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
     cfg.log_config = dict(
         interval=50,
         hooks=[
@@ -71,17 +67,13 @@ def train(k_fold):
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
-<<<<<<< HEAD
                 #  num_eval_images = 50
-=======
-                 num_eval_image = 10
->>>>>>> origin/T4073
             )
     ])
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
-    cfg.load_from = './configs/_TrashSEG_/beit_unlim/beit_large_patch16_640_pt22k_ft22ktoade20k.pth'
+    cfg.load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/_TrashSEG_/senformer/senformer_swin_large_512x512_coco.pth'
     # build_dataset
     datasets = [build_dataset(cfg.data.train)]
     

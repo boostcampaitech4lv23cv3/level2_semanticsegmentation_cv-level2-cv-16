@@ -20,11 +20,11 @@ selfos = platform.system()
 dataset_path = "../../data"
 
 project_dir = '../mmsegmentation'
-model_dir = 'convnext_fb'
-model_name = 'upernet_convnext_xlarge_640_160k_ade20k_ms'
+model_dir = 'senformer'
+model_name = 'senformer_fpnt_swin_large_512x512_80k_coco'
 work_dirs = 'work_dirs'
 data_root = '../../data'
-pth_name = 'best_mIoU_epoch_7'
+pth_name = 'epoch_98'
 k_fold = 0
 
 CLASSES = [
@@ -43,7 +43,7 @@ def write_csv(output,cfg):
     input_size = 512
     output_size = 256
 
-    submission = pd.read_csv("../../submission/sample_submission.csv", index_col=None)
+    submission = pd.read_csv("../../code/submission/sample_submission.csv", index_col=None)
     json_dir = os.path.join(dataset_path, "test.json")
 
 
@@ -67,11 +67,11 @@ def write_csv(output,cfg):
         submission = pd.concat([submission, pd.DataFrame([{"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}])]
                                        , ignore_index=True)
 
-        submission.to_csv(os.path.join('../../submission', f'submission_{model_name}_{k_fold}.csv'), index=False)
+        submission.to_csv(os.path.join(f'../mmsegmentation/work_dirs/{model_name}_{k_fold}/', f'submission_{model_name}_{k_fold}_{pth_name}.csv'), index=False)
 
 def inference():
     cfg = Config.fromfile(f'{project_dir}/configs/_TrashSEG_/{model_dir}/{model_name}.py')
-    cfg.data.test.img_dir = data_root + '/test'
+    cfg.data.test.img_dir = data_root + '/test_images'
     cfg.data.test.test_mode = True
     
     cfg.data.samples_per_gpu = 4

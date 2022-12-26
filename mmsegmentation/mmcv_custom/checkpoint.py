@@ -285,6 +285,8 @@ def _load_checkpoint(filename, map_location=None):
         if not osp.isfile(filename):
             raise IOError(f'{filename} is not a checkpoint file')
         checkpoint = torch.load(filename, map_location=map_location)
+        if isinstance(checkpoint, OrderedDict):
+            checkpoint = _process_mmcls_checkpoint(checkpoint)
     return checkpoint
 
 
