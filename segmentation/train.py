@@ -29,9 +29,21 @@ def parse_args():
         default=MyConfig.config,
         help='train config file path')
     parser.add_argument(
+        '--exp_name', 
+        default=MyConfig.exp_name, 
+        help='wandb exp name')
+    parser.add_argument(
         '--work_dir', 
         default=MyConfig.work_dir, 
         help='the dir to save logs and models')
+    parser.add_argument(
+        '--wandb_project', 
+        default=MyConfig.wandb_project, 
+        help='set wandb project name')
+    parser.add_argument(
+        '--wandb_entity', 
+        default=MyConfig.wandb_entity, 
+        help='set wandb entity name')
     parser.add_argument(
         '--load_from', 
         default=MyConfig.load_from, 
@@ -209,6 +221,25 @@ def main():
         model = revert_sync_batchnorm(model)
 
     logger.info(model)
+    
+    if args.wandb_project and args.wandb_entity:
+        cfg.log_config = dict(
+            interval=50,
+            hooks=[
+                dict(type='TextLoggerHook'),
+                #dict(type='ImageDetection'),
+                #dict(type='TensorboardLoggerHook')
+                #dict(type='CustomSweepHook')
+                dict(type='MMSegWandbHook', 
+                    init_kwargs=dict(project=args.wandb_project, 
+                                    entity=args.wandb_entity, 
+                                    name=f'{args.exp_name}'),
+                    configs=args,
+                    interval=50,
+                    num_eval_images=50,
+                    log_checkpoint=False, 
+                    log_checkpoint_metadata=True)
+            ])
 
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:

@@ -8,6 +8,7 @@ from mmseg.apis import train_segmentor
 from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
+from mmcv.cnn.utils import revert_sync_batchnorm
 
 import wandb
 import wandb_config
@@ -34,7 +35,7 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 4
+    cfg.data.samples_per_gpu = 1
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
@@ -48,8 +49,7 @@ def train(k_fold):
         save_best = 'mIoU',
         pre_eval = True
     )
-    
-    
+
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
     # cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
@@ -69,7 +69,8 @@ def train(k_fold):
                  log_checkpoint_metadata=True,
                 #  num_eval_images = 50
             )
-    ])
+            ]
+    )
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
@@ -81,7 +82,10 @@ def train(k_fold):
 
     # 모델 build 및 pretrained network 불러오기
     model = build_segmentor(cfg.model)
+    model = revert_sync_batchnorm(model)
     model.init_weights()
+    model.CLASSES = cfg.classes
+    model.PALLETE = cfg.palette
 
     meta = dict()
     #meta['fp16'] = dict(loss_scale=dict(init_scale=512))
@@ -92,5 +96,5 @@ def train(k_fold):
 if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
-    #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
+    #wandb.init(entity="revanZX",project="Trash_Seg",name=f'{model_name}_0')
     train(0)

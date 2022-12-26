@@ -22,10 +22,11 @@ from .unet import UNet
 from .vit import VisionTransformer
 from .convnext import ConvNeXt
 from .beit_unlim import BEiT_unlim
+from .beit_adapter import BEiTAdapter
 __all__ = [
     'ResNet', 'ResNetV1c', 'ResNetV1d', 'ResNeXt', 'HRNet', 'FastSCNN',
     'ResNeSt', 'MobileNetV2', 'UNet', 'CGNet', 'MobileNetV3',
     'VisionTransformer', 'SwinTransformer', 'MixVisionTransformer',
     'BiSeNetV1', 'BiSeNetV2', 'ICNet', 'TIMMBackbone', 'ERFNet', 'PCPVT',
-    'SVT', 'STDCNet', 'STDCContextPathNet', 'BEiT', 'MAE','ConvNeXt', 'BEiT_unlim'
+    'SVT', 'STDCNet', 'STDCContextPathNet', 'BEiT', 'MAE','ConvNeXt', 'BEiT_unlim''BEiTAdapter',
 ]
