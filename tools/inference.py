@@ -20,11 +20,11 @@ selfos = platform.system()
 dataset_path = "../../data"
 
 project_dir = '../mmsegmentation'
-model_dir = 'convnext_fb'
-model_name = 'upernet_convnext_xlarge_640_160k_ade20k_ms'
-work_dirs = 'work_dirs'
+model_dir = 'senformer'
+model_name = 'senformer_fpnt_r101_512x512_80k_coco'
+work_dirs = 'work_dirs/senformer_fpnt_r101_512x512_80k_coco_adampoly_0'
 data_root = '../../data'
-pth_name = 'best_mIoU_epoch_7'
+pth_name = 'best_mIoU_epoch_17'
 k_fold = 0
 
 CLASSES = [
@@ -89,7 +89,7 @@ def inference():
         shuffle=False)
     
     model = build_segmentor(cfg.model, test_cfg=cfg.get('test_cfg'))
-    checkpoint = load_checkpoint(model,os.path.join(project_dir,work_dirs,model_name + '_0',pth_name+'.pth'), map_location='cpu')
+    checkpoint = load_checkpoint(model,os.path.join(project_dir,work_dirs,pth_name+'.pth'), map_location='cpu')
     model.CLASSES = CLASSES
     model = MMDataParallel(model.cuda(), device_ids=[0])
     output = single_gpu_test(model, data_loader)
@@ -98,5 +98,4 @@ def inference():
 if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
-    #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
     inference()

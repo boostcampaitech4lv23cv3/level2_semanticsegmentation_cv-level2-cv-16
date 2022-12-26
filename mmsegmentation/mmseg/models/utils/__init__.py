@@ -14,3 +14,17 @@ __all__ = [
     'UpConvBlock', 'InvertedResidualV3', 'SELayer', 'PatchEmbed',
     'nchw_to_nlc', 'nlc_to_nchw', 'nchw2nlc2nchw', 'nlc2nchw2nlc'
 ]
+
+
+from .assigner import MaskHungarianAssigner
+from .point_sample import get_uncertain_point_coords_with_randomness
+from .positional_encoding import (LearnedPositionalEncoding,
+                                  SinePositionalEncoding)
+from .transformer import (DetrTransformerDecoder, DetrTransformerDecoderLayer,
+                          DynamicConv, Transformer)
+
+__all__ += [
+    'DetrTransformerDecoderLayer', 'DetrTransformerDecoder', 'DynamicConv',
+    'Transformer', 'LearnedPositionalEncoding', 'SinePositionalEncoding',
+    'MaskHungarianAssigner', 'get_uncertain_point_coords_with_randomness'
+]
