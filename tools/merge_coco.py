@@ -22,6 +22,7 @@ def main():
     args = parse_args()
     json_lst = os.listdir(args.json_dir)
     assert len(json_lst) > 1, "files count least more than 2"
+    json_lst.sort()
     with open(osp.join(args.json_dir, json_lst[0])) as f: 
         data = json.load(f)
     # merge json
@@ -32,11 +33,11 @@ def main():
         data['images'].extend(_data['images'])
         data['annotations'].extend(_data['annotations'])
     # sorting by id
-    data['images'].sort(key=lambda x: x['id'])
-    data['annotations'].sort(key=lambda x: x['id'])
+    # data['images'].sort(key=lambda x: x['id'])
+    # data['annotations'].sort(key=lambda x: x['id'])
     # save json
     with open(osp.join(args.save_path, f'merge_coco.json'), 'w') as f: 
-        json.dump(data, f, indent=4)
+        json.dump(data, f)
 
 if __name__ == '__main__':
     main()
