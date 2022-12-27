@@ -10,7 +10,6 @@ _base_ = [
     '../_base_/models/upernet_convnext_fb.py', '../_base_/datasets/custom_dataset.py',
     '../_base_/default_runtime.py', '../_base_/schedules/schedule_160k.py'
 ]
-img_scale = (640, 640)
 crop_size = (640, 640)
 
 model = dict(

@@ -8,7 +8,6 @@ from mmseg.apis import train_segmentor
 from mmseg.datasets import (build_dataloader, build_dataset)
 from mmseg.utils import get_device
 from multiprocessing import freeze_support
-from mmcv.cnn.utils import revert_sync_batchnorm
 
 import wandb
 import wandb_config
@@ -49,7 +48,25 @@ def train(k_fold):
         save_best = 'mIoU',
         pre_eval = True
     )
-
+    cfg.optimizer = dict(
+            constructor='LearningRateDecayOptimizerConstructor',
+            type='AdamW',
+            lr=0.00008,
+            betas=(0.9, 0.999),
+            weight_decay=0.05,
+            paramwise_cfg={
+                'decay_rate': 0.9,
+                'decay_type': 'stage_wise',
+                'num_layers': 12
+        })
+    
+    cfg.lr_config = dict(
+            policy='CosineRestart', 
+            periods=[ 2*(2617 // cfg.data.samples_per_gpu + 1) for _ in range(200)],
+            restart_weights=[1 for _ in range(200)],
+            by_epoch = False,
+            min_lr=1e-07
+        )
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
     # cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
@@ -69,8 +86,7 @@ def train(k_fold):
                  log_checkpoint_metadata=True,
                 #  num_eval_images = 50
             )
-            ]
-    )
+    ])
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
@@ -82,10 +98,7 @@ def train(k_fold):
 
     # 모델 build 및 pretrained network 불러오기
     model = build_segmentor(cfg.model)
-    model = revert_sync_batchnorm(model)
     model.init_weights()
-    model.CLASSES = cfg.classes
-    model.PALLETE = cfg.palette
 
     meta = dict()
     #meta['fp16'] = dict(loss_scale=dict(init_scale=512))
@@ -96,5 +109,5 @@ def train(k_fold):
 if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
-    #wandb.init(entity="revanZX",project="Trash_Seg",name=f'{model_name}_0')
+    #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
     train(0)
