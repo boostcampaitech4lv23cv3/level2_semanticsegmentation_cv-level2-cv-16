@@ -4,7 +4,7 @@ import numpy as np
 from mmseg.datasets.builder import PIPELINES
 
 
-@PIPELINES.register_module()
+@PIPELINES.register_module(force=True)
 class SETR_Resize(object):
     """Resize images & seg.
     This transform resizes the input image to some scale. If the input dict

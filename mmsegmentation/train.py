@@ -18,8 +18,8 @@ from mmcv.runner.hooks import HOOKS, Hook
 
 selfos = platform.system() 
 
-model_dir = 'senformer'
-model_name = 'senformer_fpnt_swin_large_512x512_80k_coco'
+model_dir = 'hornet'
+model_name = 'upernet_hornet_large_gf_640_160k_ade20k'
 work_dir = f'./work_dirs/{model_name}'
 data_root = '../../data'
 
@@ -35,7 +35,7 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 1
+    cfg.data.samples_per_gpu = 2
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
@@ -74,7 +74,7 @@ def train(k_fold):
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
-    cfg.load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/_TrashSEG_/senformer/senformer_swin_large_512x512_coco.pth'
+    cfg.load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/upernet_hornet_large_gf.pth'
     # build_dataset
     datasets = [build_dataset(cfg.data.train)]
     
