@@ -40,7 +40,7 @@ train_pipeline = [
     # dict(type='LoadAnnotations', reduce_zero_label=True),
     dict(type="LoadAnnotations"),
     dict(type="Resize", img_scale=img_scale, ratio_range=(0.5, 2.0)),
-    #dict(type="RandomCrop", crop_size=crop_size, cat_max_ratio=0.75),
+    dict(type="RandomCrop", crop_size=crop_size, cat_max_ratio=0.75),
     dict(type="RandomFlip", prob=0.5),
     dict(type="PhotoMetricDistortion"),
     dict(type="Normalize", **img_norm_cfg),
@@ -80,8 +80,8 @@ test_pipeline = [
     ),
 ]
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
+    samples_per_gpu=4,
+    workers_per_gpu=2,
     train=dict(
         type=dataset_type,
         palette=palette,

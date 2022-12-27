@@ -52,7 +52,6 @@ def voc_classes():
     ]
 
 
-
 def cocostuff_classes():
     """CocoStuff class names for external use."""
     return [
@@ -265,34 +264,6 @@ def stare_palette():
     """STARE palette for external use."""
     return [[120, 120, 120], [6, 230, 230]]
 
-def custom_classes():
-    """boostcamp Trash_segmentation names for external use."""
-    return ["Background",
-            "General trash",
-            "Paper",
-            "Paper pack",
-            "Metal",
-            "Glass",
-            "Plastic",
-            "Styrofoam",
-            "Plastic bag",
-            "Battery",
-            "Clothing"
-            ]
-    
-def custom_palette():
-    """iSAID palette for external use."""
-    return [[0, 0, 0],
-            [0, 0, 128],
-            [0, 128, 192],
-            [0, 128, 64],
-            [128, 0, 0],
-            [64, 0, 128],
-            [64, 0, 192],
-            [192, 128, 64],
-            [192, 192, 128],
-            [64, 64, 128],
-            [128, 0, 192]]
 
 dataset_aliases = {
     'cityscapes': ['cityscapes'],
@@ -307,8 +278,7 @@ dataset_aliases = {
         'coco_stuff164k'
     ],
     'isaid': ['isaid', 'iSAID'],
-    'stare': ['stare', 'STARE'],
-    'custom': ['custom']
+    'stare': ['stare', 'STARE']
 }
 
 
