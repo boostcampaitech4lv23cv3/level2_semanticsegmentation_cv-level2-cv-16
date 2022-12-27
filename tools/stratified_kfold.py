@@ -11,7 +11,7 @@ from tqdm import tqdm
 path = os.path.dirname(os.path.abspath(__file__))
 data_path = "../../data"
 
-annotations_path = os.path.join(data_path, "train_all.json")
+annotations_path = os.path.join(data_path, "merge_coco.json")
 
 
 def main(args):
