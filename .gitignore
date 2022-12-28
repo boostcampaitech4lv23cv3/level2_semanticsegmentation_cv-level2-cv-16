@@ -165,3 +165,8 @@ segmentation/wandb/
 segmentation/artifacts/
 segmentation/pretrained/
 tools/*.pth
+
+*.pth
+*.pkl
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/output/
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/pretrained/
