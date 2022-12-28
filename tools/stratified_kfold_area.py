@@ -8,27 +8,54 @@ import random
 from sklearn.model_selection import StratifiedGroupKFold
 from tqdm import tqdm
 
+from pycocotools.coco import COCO
+from collections import Counter
+
 path = os.path.dirname(os.path.abspath(__file__))
-data_path = "../../data"
+data_path = "../../data/dataV2"
 
-annotations_path = os.path.join(data_path, "train_all.json")
+annotations_path = os.path.join(data_path, "merge_coco.json")
 
+
+def get_mask(path):
+    X = []
+    y = []
+    groups = []
+    coco = COCO(path)
+    catIds = coco.getCatIds()
+    imgIds = coco.getImgIds()
+    print("catIds len:{}, imgIds len:{}".format(len(catIds), len(imgIds)))
+    for index, imgId in tqdm(enumerate(imgIds), total=len(imgIds)):
+        img = coco.loadImgs(imgId)[0]
+        annIds = coco.getAnnIds(imgIds=img['id'], catIds=catIds, iscrowd=None)
+        anns = coco.loadAnns(annIds)
+        anns = sorted(anns, key=lambda idx: idx['area'], reverse=True)
+        if len(annIds) > 0:
+            mask = coco.annToMask(anns[0]) * anns[0]['category_id']
+            for i in range(len(anns) - 1):
+                mask[coco.annToMask(anns[i+1]) == 1] = anns[i+1]['category_id']
+        
+        class_dict = Counter(mask.flatten())
+        for key, value in class_dict.items():
+            X.append(value)
+            y.append(key)
+            groups.append(imgId)
+    X = np.array(X)
+    y = np.array(y)
+    groups = np.array(groups)
+    return X, y, groups
 
 def main(args):
     random.seed(args.random_seed)
     with open(annotations_path) as f:
         data = json.load(f)
         images = data["images"]
-        categories = data["categories"]
+        catkegories = data["categories"]
         annotations = data["annotations"]
 
     annotations_df = pd.DataFrame.from_dict(annotations)
 
-    var = [(ann["image_id"], ann["category_id"]) for ann in data["annotations"]]
-
-    X = np.ones((len(data["annotations"]), 1))
-    y = np.array([v[1] for v in var])
-    groups = np.array([v[0] for v in var])
+    X, y, groups = get_mask(annotations_path)
 
     cv = StratifiedGroupKFold(
         n_splits=args.n_split, shuffle=True, random_state=args.random_seed
