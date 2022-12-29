@@ -317,52 +317,14 @@ def main(args):
 
 
 if __name__ == "__main__":
-    # register_all_trash_full()
-    # args = default_argument_parser().parse_args()
-    # print("Command Line Args:", args)
-    # launch(
-    #     main,
-    #     args.num_gpus,
-    #     num_machines=args.num_machines,
-    #     machine_rank=args.machine_rank,
-    #     dist_url=args.dist_url,
-    #     args=(args,),
-    # )
     register_all_trash_full()
     args = default_argument_parser().parse_args()
-    args.config_file = './configs/ade20k/semantic-segmentation/semask_swin/custom_trash_semantic_segmentation.yaml'
-    print(args.config_file)
-    cfg = setup(args)
-    # print(cfg.SOLVER.BEST_CHECKPOINTER.METRIC)
-    sem_seg = cfg.SOLVER.BEST_CHECKPOINTER.TYPE
-    miou = cfg.SOLVER.BEST_CHECKPOINTER.METRIC
-    print(sem_seg)
-    val_metric = OrderedDict([('sem_seg', 
-                                {'mIoU': 35.156654426518635, 
-                                'fwIoU': 84.73893457903692, 
-                                'IoU-Backgroud': 95.40638319654596, 
-                                'IoU-General trash': 25.23310411541275, 
-                                'IoU-Paper': 67.215882464251, 
-                                'IoU-Paper pack': 0.47234655659538893, 
-                                'IoU-Metal': 24.478531259435854, 
-                                'IoU-Glass': 4.177740052478586, 
-                                'IoU-Plastic': 35.29316712702351, 
-                                'IoU-Styrofoam': 55.24104934043874, 
-                                'IoU-Plastic bag': 79.20499457952323, 
-                                'IoU-Battery': 0.0, 
-                                'IoU-Clothing': 0.0, 
-                                'mACC': 43.58270559434547, 
-                                'pACC': 90.49590900882644, 
-                                'ACC-Backgroud': 98.29049465541931, 
-                                'ACC-General trash': 40.65951943881152, 
-                                'ACC-Paper': 78.69334189383038, 
-                                'ACC-Paper pack': 0.4733549840126324, 
-                                'ACC-Metal': 24.5516253132796, 
-                                'ACC-Glass': 4.178125661095832, 
-                                'ACC-Plastic': 65.68425146129681, 
-                                'ACC-Styrofoam': 77.12888837287346, 
-                                'ACC-Plastic bag': 89.75015975718063, 
-                                'ACC-Battery': 0.0, 
-                                'ACC-Clothing': 0.0})])
-    
-    print(val_metric[sem_seg][miou])
+    print("Command Line Args:", args)
+    launch(
+        main,
+        args.num_gpus,
+        num_machines=args.num_machines,
+        machine_rank=args.machine_rank,
+        dist_url=args.dist_url,
+        args=(args,),
+    )

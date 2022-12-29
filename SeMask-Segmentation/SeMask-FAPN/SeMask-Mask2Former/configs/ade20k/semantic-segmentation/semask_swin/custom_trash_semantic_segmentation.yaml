@@ -34,7 +34,7 @@ INPUT:
   SIZE_DIVISIBILITY: 640  # used in dataset mapper
   FORMAT: "RGB"
 TEST:
-  EVAL_PERIOD: 1000
+  EVAL_PERIOD: 1300
   AUG:
     ENABLED: False
     MIN_SIZES: [320, 480, 640, 800, 960, 1120]
