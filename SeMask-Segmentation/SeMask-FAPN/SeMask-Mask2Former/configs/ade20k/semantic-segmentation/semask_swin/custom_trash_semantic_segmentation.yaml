@@ -40,3 +40,9 @@ TEST:
     MIN_SIZES: [320, 480, 640, 800, 960, 1120]
     MAX_SIZE: 2240
     FLIP: True
+SOLVER:
+    BEST_CHECKPOINTER:
+        ENABLED: True
+        TYPE: "sem_seg"
+        METRIC: "mIoU"
+OUTPUT_DIR: "./trash_dataV1_check_best_mIoU"

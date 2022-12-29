@@ -61,5 +61,5 @@ if __name__=="__main__":
     # print([tuple(P) for P in PALLETE])
     register_all_trash_full()
     # print(MetadataCatalog.list())
-    print(MetadataCatalog.get("trash_recycle_sem_seg_train_0").meta)
+    print(MetadataCatalog.get("trash_recycle_sem_seg_train_0").name)
     # print(MetadataCatalog.get("ade20k_sem_seg_train").stuff_classes)

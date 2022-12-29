@@ -2,6 +2,12 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 from detectron2.config import CfgNode as CN
 
+def add_best_mIoU_checkpointer_config(cfg: CN):
+    _C = cfg
+    _C.SOLVER.BEST_CHECKPOINTER = CN({"ENABLED": False})
+    _C.SOLVER.BEST_CHECKPOINTER.METRIC = "mIoU"
+    _C.SOLVER.BEST_CHECKPOINTER.TYPE = "sem_seg"
+    _C.SOLVER.BEST_CHECKPOINTER.MODE = "max"
 
 def add_maskformer2_config(cfg):
     """

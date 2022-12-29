@@ -61,13 +61,13 @@ def write_csv(output,cfg):
         mask = predict.reshape((1, output_size, input_size//output_size, output_size, input_size//output_size)).max(4).max(2) # resize to 256*256
         temp_mask.append(mask)
         oms = np.array(temp_mask)
-        cv2.imwrite(os.path.join('./mask_test', file_name), oms)
+        # cv2.imwrite(os.path.join('./mask_test', file_name), oms)
         oms = oms.reshape([oms.shape[0], output_size*output_size]).astype(int)
         string = oms.flatten()
         submission = pd.concat([submission, pd.DataFrame([{"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}])]
                                        , ignore_index=True)
 
-        submission.to_csv(os.path.join('../../submission', f'submission_{model_name}_{k_fold}.csv'), index=False)
+    submission.to_csv(os.path.join('../../submission', f'submission_{model_name}_{k_fold}.csv'), index=False)
 
 def inference():
     cfg = Config.fromfile(f'{project_dir}/configs/_TrashSEG_/{model_dir}/{model_name}.py')
