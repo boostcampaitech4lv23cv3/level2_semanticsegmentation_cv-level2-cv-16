@@ -30,8 +30,12 @@ model = dict(
         num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
-        loss_decode=dict(
-            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0)),
+        # ignore_index=0, ################# Ignore specified label index in loss calculation
+        loss_decode=[dict(
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0,
+            class_weight=[2., 4., 2.4, 3.4, 3.2, 3.8, 3.6, 2.6, 2.2, 2.8, 3.]), ################# Class Balanced Loss, Multiple Losses
+            dict(type='DiceLoss', loss_name='loss_dice', loss_weight=3.0)]
+            ),
     auxiliary_head=dict(
         type='FCNHead',
         in_channels=256,
@@ -43,8 +47,10 @@ model = dict(
         num_classes=11,
         norm_cfg=norm_cfg,
         align_corners=False,
-        loss_decode=dict(
-            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=0.4)),
+        # ignore_index=0, ################# Ignore specified label index in loss calculation
+        loss_decode=[dict(
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=0.4),
+            dict(type='DiceLoss', loss_name='loss_dice', loss_weight=1.2)]),
     # model training and testing settings
     train_cfg=dict(),
     test_cfg=dict(mode='whole'))
