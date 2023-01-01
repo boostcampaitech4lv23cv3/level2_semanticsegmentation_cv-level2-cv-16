@@ -14,6 +14,9 @@ from collections import OrderedDict
 from typing import Any, Dict, List, Set
 
 import torch
+# git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
+# pip install -e pytorch-cosine-annealing-with-warmup-master
+from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
 
 import detectron2.utils.comm as comm
 from detectron2.checkpoint import DetectionCheckpointer
@@ -38,6 +41,7 @@ from detectron2.evaluation import (
 )
 from detectron2.projects.deeplab import add_deeplab_config, build_lr_scheduler
 from detectron2.solver.build import maybe_add_gradient_clipping
+from detectron2.solver.lr_scheduler import WarmupCosineLR
 from detectron2.utils.logger import setup_logger
 
 # MaskFormer
@@ -175,7 +179,26 @@ class Trainer(DefaultTrainer):
         It now calls :func:`detectron2.solver.build_lr_scheduler`.
         Overwrite it if you'd like a different scheduler.
         """
-        return build_lr_scheduler(cfg, optimizer)
+        if cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupPolyLR":
+            return build_lr_scheduler(cfg, optimizer)
+
+        elif cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupCosineLR":
+            # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
+            # pip install -e pytorch-cosine-annealing-with-warmup-master
+            max_lr = cfg.SOLVER.BASE_LR # 0.0001
+            min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-7
+            first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 6500
+            cycle_mul = cfg.SOLVER.WARMUP_FACTOR
+            # warmup_steps = int(cfg.SOLVER.WARMUP_ITERS * 0.2) # 1300
+            warmup_steps = 0
+            return CosineAnnealingWarmupRestarts(optimizer, 
+                                                first_cycle_steps=first_cycle_steps, 
+                                                cycle_mult=cycle_mul,
+                                                max_lr=max_lr,
+                                                min_lr=min_lr,
+                                                warmup_steps=warmup_steps,
+                                                gamma=0.75,
+                                                last_epoch=-1)
 
     @classmethod
     def build_optimizer(cls, cfg, model):
@@ -282,11 +305,13 @@ def setup(args):
     """
     cfg = get_cfg()
     # for poly lr schedule
+    cfg.SEED = 42
     add_deeplab_config(cfg)
     add_maskformer2_config(cfg)
     add_best_mIoU_checkpointer_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+    cfg.OUTPUT_DIR = './trash_dataV1_WarmupPolyLR_1e-5'
     cfg.freeze()
     default_setup(cfg, args)
     # Setup logger for "mask_former" module
