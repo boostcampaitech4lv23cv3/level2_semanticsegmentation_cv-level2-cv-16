@@ -1,7 +1,7 @@
 # Copyright (c) Shanghai AI Lab. All rights reserved.
 _base_ = [
     './models/mask2former_beit_cocostuff.py',
-    './datasets/trash-base_fold0.py',
+    './datasets/trash-base_fold3.py',
     './default_runtime.py',
     './schedules/schedule_80k.py'
 ]
@@ -150,4 +150,4 @@ data = dict(samples_per_gpu=1,
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
 checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
-evaluation = dict(start=40000, interval=2000, metric='mIoU', save_best='mIoU')
+evaluation = dict(start=2000, interval=2000, metric='mIoU', save_best='mIoU')
