@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = "CustomDataset"
-data_root = "../../data"
+data_root = "../../data/kfold_v2_no_area"
 
 classes = [
     "Background",

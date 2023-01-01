@@ -7,7 +7,7 @@
 
 
 _base_ = [
-    '../_base_/models/upernet_hornet.py', '../_base_/datasets/custom.py',
+    '../_base_/models/upernet_hornet.py', '../_base_/datasets/custom_dataset.py',
     '../_base_/default_runtime.py', '../_base_/schedules/schedule_160k.py'
 ]
 crop_size = (640, 640)
@@ -44,11 +44,19 @@ optimizer = dict(constructor='LearningRateDecayOptimizerConstructorHorNet', _del
                                 'decay_type': 'stage_wise',
                                 'num_layers': 12})
 
-lr_config = dict(_delete_=True, policy='poly',
-                 warmup='linear',
-                 warmup_iters=1500,
-                 warmup_ratio=1e-6,
-                 power=1.0, min_lr=0.0, by_epoch=False)
+# lr_config = dict(_delete_=True, policy='poly',
+#                  warmup='linear',
+#                  warmup_iters=1500,
+#                  warmup_ratio=1e-6,
+#                  power=1.0, min_lr=0.0, by_epoch=False)
+
+lr_config = dict(
+    _delete_=True,
+    policy='step',
+    warmup='linear',
+    warmup_iters=4000,
+    warmup_ratio=0.001,
+    step=[20, 40, 60, 80])
 
 # By default, models are trained on 8 GPUs with 2 images per GPU
 data=dict(samples_per_gpu=2)

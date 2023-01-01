@@ -20,11 +20,11 @@ selfos = platform.system()
 dataset_path = "../../data"
 
 project_dir = '../mmsegmentation'
-model_dir = 'senformer'
-model_name = 'senformer_fpnt_swin_large_512x512_80k_coco'
+model_dir = 'hornet'
+model_name = 'upernet_hornet_large_gf_640_160k_ade20k'
 work_dirs = 'work_dirs'
 data_root = '../../data'
-pth_name = 'best_mIoU_epoch_7'
+pth_name = 'best_mIoU_epoch_53'
 k_fold = 0
 
 CLASSES = [
@@ -67,7 +67,7 @@ def write_csv(output,cfg):
         submission = pd.concat([submission, pd.DataFrame([{"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}])]
                                        , ignore_index=True)
 
-        submission.to_csv(os.path.join(f'../mmsegmentation/work_dirs/{model_name}_{k_fold}/', f'submission_{model_name}_{k_fold}_{pth_name}.csv'), index=False)
+    submission.to_csv(os.path.join(f'../mmsegmentation/work_dirs/{model_name}_v2_2_{k_fold}/', f'submission_{model_name}_{k_fold}_{pth_name}.csv'), index=False)
 
 def inference():
     cfg = Config.fromfile(f'{project_dir}/configs/_TrashSEG_/{model_dir}/{model_name}.py')
@@ -89,7 +89,7 @@ def inference():
         shuffle=False)
     
     model = build_segmentor(cfg.model, test_cfg=cfg.get('test_cfg'))
-    checkpoint = load_checkpoint(model,os.path.join(project_dir,work_dirs,model_name + '_0',pth_name+'.pth'), map_location='cpu')
+    checkpoint = load_checkpoint(model,os.path.join(project_dir,work_dirs,model_name + '_v2_2_0',pth_name+'.pth'), map_location='cpu')
     model.CLASSES = CLASSES
     model = MMDataParallel(model.cuda(), device_ids=[0])
     output = single_gpu_test(model, data_loader)

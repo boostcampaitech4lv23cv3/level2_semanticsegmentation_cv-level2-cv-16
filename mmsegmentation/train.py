@@ -19,8 +19,8 @@ selfos = platform.system()
 
 model_dir = 'hornet'
 model_name = 'upernet_hornet_large_gf_640_160k_ade20k'
-work_dir = f'./work_dirs/{model_name}'
-data_root = '../../data'
+work_dir = f'./work_dirs/{model_name}_v2_2'
+data_root = '../../data/kfold_v2_no_area'
 
 def train(k_fold):
 
@@ -34,7 +34,7 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 2
+    cfg.data.samples_per_gpu = 8
 
     cfg.seed = 24
     cfg.gpu_ids = [0]
@@ -48,28 +48,28 @@ def train(k_fold):
         save_best = 'mIoU',
         pre_eval = True
     )
-    cfg.optimizer = dict(
-            constructor='LearningRateDecayOptimizerConstructor',
-            type='AdamW',
-            lr=0.00008,
-            betas=(0.9, 0.999),
-            weight_decay=0.05,
-            paramwise_cfg={
-                'decay_rate': 0.9,
-                'decay_type': 'stage_wise',
-                'num_layers': 12
-        })
+    # cfg.optimizer = dict(
+    #         constructor='LearningRateDecayOptimizerConstructor',
+    #         type='AdamW',
+    #         lr=0.00008,
+    #         betas=(0.9, 0.999),
+    #         weight_decay=0.05,
+    #         paramwise_cfg={
+    #             'decay_rate': 0.9,
+    #             'decay_type': 'stage_wise',
+    #             'num_layers': 12
+    #     })
     
-    cfg.lr_config = dict(
-            policy='CosineRestart', 
-            periods=[ 2*(2617 // cfg.data.samples_per_gpu + 1) for _ in range(200)],
-            restart_weights=[1 for _ in range(200)],
-            by_epoch = False,
-            min_lr=1e-07
-        )
+    # cfg.lr_config = dict(
+    #         policy='CosineRestart', 
+    #         periods=[ 2*(2617 // cfg.data.samples_per_gpu + 1) for _ in range(200)],
+    #         restart_weights=[1 for _ in range(200)],
+    #         by_epoch = False,
+    #         min_lr=1e-07
+    #     )
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
-    # cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
+    cfg.checkpoint_config = dict(max_keep_ckpts=1, interval=1)
     cfg.log_config = dict(
         interval=50,
         hooks=[
@@ -80,7 +80,7 @@ def train(k_fold):
             dict(type='MMSegWandbHook', 
                  init_kwargs=dict(project='Trash_Segmentation', 
                                   entity='youngjun04', 
-                                  name=f'{model_name}_{k_fold}'),
+                                  name=f'{model_name}_v2_{k_fold}'),
                  interval=100, 
                  log_checkpoint=False, 
                  log_checkpoint_metadata=True,
@@ -90,7 +90,7 @@ def train(k_fold):
     
     cfg.device = get_device()
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=200)
-    cfg.load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/upernet_hornet_large_gf.pth'
+    cfg.load_from = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/mmsegmentation/configs/_TrashSEG_/hornet/upernet_hornet_large_gf.pth'
     # build_dataset
     datasets = [build_dataset(cfg.data.train)]
     
