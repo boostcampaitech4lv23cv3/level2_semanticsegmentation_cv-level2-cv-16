@@ -38,6 +38,14 @@ def parse_args():
         default=MyConfig.work_dir, 
         help='the dir to save logs and models')
     parser.add_argument(
+        '--wandb_project', 
+        default=MyConfig.wandb_project, 
+        help='set wandb project name')
+    parser.add_argument(
+        '--wandb_entity', 
+        default=MyConfig.wandb_entity, 
+        help='set wandb entity name')
+    parser.add_argument(
         '--load_from', 
         default=MyConfig.load_from, 
         help='the checkpoint file to load weights from')

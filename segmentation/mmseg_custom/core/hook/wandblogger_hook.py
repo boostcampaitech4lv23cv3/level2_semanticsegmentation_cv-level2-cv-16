@@ -219,7 +219,8 @@ class MMSegWandbHook(WandbLoggerHook):
             # Log predictions
             self._log_predictions(results, runner)
             # Log the table
-            self._log_eval_table(runner.iter + 1)
+            self._log_eval_table(results, runner)
+            
 
     @master_only
     def after_run(self, runner):
@@ -241,6 +242,12 @@ class MMSegWandbHook(WandbLoggerHook):
     def _get_eval_results(self):
         """Get model evaluation results."""
         results = self.eval_hook.latest_results
+        eval_results = self.val_dataset.evaluate(
+            results, logger='silent', **self.eval_hook.eval_kwargs)
+        return eval_results
+    
+    def _get_eval_results_fix(self, results):
+        """Get model evaluation results."""
         eval_results = self.val_dataset.evaluate(
             results, logger='silent', **self.eval_hook.eval_kwargs)
         return eval_results
@@ -364,13 +371,20 @@ class MMSegWandbHook(WandbLoggerHook):
 
         self.data_table_ref = data_artifact.get('val_data')
 
-    def _log_eval_table(self, iter):
+    def _log_eval_table(self, results, runner):
         """Log the W&B Tables for model evaluation.
 
         The table will be logged multiple times creating new version. Use this
         to compare models at different intervals interactively.
         """
+        if self.eval_hook:
+            metadata = {
+                'iter': runner.iter + 1,
+                **self._get_eval_results_fix(results)
+            }
+        else:
+            metadata = None
         pred_artifact = self.wandb.Artifact(
-            f'run_{self.wandb.run.id}_pred', type='evaluation')
+            f'run_{self.wandb.run.id}_pred', type='evaluation', metadata=metadata)
         pred_artifact.add(self.eval_table, 'eval_data')
         self.wandb.run.log_artifact(pred_artifact)

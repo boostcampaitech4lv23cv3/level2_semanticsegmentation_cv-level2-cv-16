@@ -3,17 +3,16 @@ _base_ = [
     './models/mask2former_beit_cocostuff.py',
     './datasets/trash-base_fold0.py',
     './default_runtime.py',
-    './schedules/schedule_80k.py'
+    './schedules/schedule_40k.py'
 ]
-crop_size = (896, 896)
-pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beitv2/beitv2_large_patch16_224_pt1k_ft21k.pth'
-# pretrained = 'pretrained/beitv2_large_patch16_224_pt1k_ft21k.pth'
+crop_size = (512, 512)
+pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22k.pth'
+# pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
 model = dict(
-    type='EncoderDecoderMask2Former',
     pretrained=pretrained,
     backbone=dict(
         type='BEiTAdapter',
-        img_size=896,
+        img_size=512,
         patch_size=16,
         embed_dim=1024,
         depth=24,
@@ -36,7 +35,7 @@ model = dict(
         in_channels=[1024, 1024, 1024, 1024],
         feat_channels=1024,
         out_channels=1024,
-        num_queries=200,
+        num_queries=100,
         pixel_decoder=dict(
             type='MSDeformAttnPixelDecoder',
             num_outs=3,
@@ -101,15 +100,15 @@ model = dict(
                                  'ffn', 'norm')),
             init_cfg=None)
     ),
-    test_cfg=dict(mode='slide', crop_size=crop_size, stride=(512, 512))
+    test_cfg=dict(mode='slide', crop_size=crop_size, stride=(341, 341))
 )
 # dataset settings
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='LoadAnnotations'),
-    dict(type='Resize', img_scale=(3584, 896), ratio_range=(0.5, 2.0)),
+    dict(type='LoadAnnotations', reduce_zero_label=True),
+    dict(type='Resize', img_scale=(2048, 512), ratio_range=(0.5, 2.0)),
     dict(type='RandomCrop', crop_size=crop_size, cat_max_ratio=0.75),
     dict(type='RandomFlip', prob=0.5),
     dict(type='PhotoMetricDistortion'),
@@ -123,7 +122,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(3584, 896),
+        img_scale=(2048, 512),
         # img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
         flip=False,
         transforms=[
@@ -144,10 +143,10 @@ lr_config = dict(_delete_=True,
                  warmup_iters=1500,
                  warmup_ratio=1e-6,
                  power=1.0, min_lr=0.0, by_epoch=False)
-data = dict(samples_per_gpu=1,
+data = dict(samples_per_gpu=2,
             train=dict(pipeline=train_pipeline),
             val=dict(pipeline=test_pipeline),
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
 checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
-evaluation = dict(start=40000, interval=2000, metric='mIoU', save_best='mIoU')
+evaluation = dict(interval=2000, metric='mIoU', save_best='mIoU')

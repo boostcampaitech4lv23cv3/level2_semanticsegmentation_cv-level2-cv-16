@@ -171,3 +171,9 @@ tools/*.pth
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/output/
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/pretrained/
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV1_check_best_mIoU/
+
+*.pth
+*.pkl
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/output/
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/pretrained/
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV1_check_best_mIoU/

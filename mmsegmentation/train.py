@@ -48,7 +48,7 @@ def train(k_fold):
     cfg.data.val.ann_dir   = data_root + f'/annotations/val_{k_fold}'
     
     cfg.data.workers_per_gpu = 4 #num_workers
-    cfg.data.samples_per_gpu = 4
+    cfg.data.samples_per_gpu = 3
 
     cfg.seed = 42
     cfg.gpu_ids = [0]
@@ -62,8 +62,25 @@ def train(k_fold):
         save_best = 'mIoU',
         pre_eval = True
     )
+    cfg.optimizer = dict(
+            constructor='LearningRateDecayOptimizerConstructor',
+            type='AdamW',
+            lr=0.00008,
+            betas=(0.9, 0.999),
+            weight_decay=0.05,
+            paramwise_cfg={
+                'decay_rate': 0.9,
+                'decay_type': 'stage_wise',
+                'num_layers': 12
+        })
     
-    
+    cfg.lr_config = dict(
+            policy='CosineRestart', 
+            periods=[ 2*(2617 // cfg.data.samples_per_gpu + 1) for _ in range(200)],
+            restart_weights=[1 for _ in range(200)],
+            by_epoch = False,
+            min_lr=1e-07
+        )
     cfg.optimizer_config.grad_clip = None #dict(max_norm=35, norm_type=2)
 
     cfg.checkpoint_config = dict(max_keep_ckpts=3, interval=1)
