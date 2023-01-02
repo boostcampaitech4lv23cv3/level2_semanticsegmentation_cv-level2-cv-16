@@ -33,7 +33,7 @@ MODEL:
     TRANSFORMER_ENC_LAYERS: 6
   RANKSEG:
     FLAG: True
-    LOSS_WEIGHT: 10
+    LOSS_WEIGHT: 5 # See Appendix H. on https://arxiv.org/abs/2203.04187 
     TOPK: 3
   SEM_SEG_HEAD:
     USE_LAYERNORM: True

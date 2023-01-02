@@ -20,7 +20,6 @@ class_labels = {
     10: "Clothing",
 }
 
-
 def _get_trash_stuff_meta():
     stuff_ids = [k for k in class_labels.keys()]
     stuff_dataset_id_to_contiguous_id = {k: i for i, k in enumerate(stuff_ids)}

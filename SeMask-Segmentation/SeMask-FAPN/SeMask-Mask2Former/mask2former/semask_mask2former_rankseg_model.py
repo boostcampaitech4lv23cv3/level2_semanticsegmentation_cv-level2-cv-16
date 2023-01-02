@@ -163,22 +163,34 @@ class SeMaskMaskFormerRankSEG(nn.Module):
             ml_loss = AsymmetricLoss(2, 0)
             ml_loss_weight = cfg.MODEL.RANKSEG.LOSS_WEIGHT
             ml_norm = nn.LayerNorm(cfg.MODEL.RANKSEG.TOPK + 1)
+            
+            criterion = SeMaskRankSegSetCriterion(
+                num_classes=sem_seg_head.num_classes,
+                matcher=matcher,
+                weight_dict=weight_dict,
+                eos_coef=no_object_weight,
+                losses=losses,
+                num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
+                oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
+                importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
+            )
+            
         else:
             ml_head = None
             ml_loss = None
             ml_loss_weight = None
             ml_norm = None
             
-        criterion = SeMaskRankSegSetCriterion(
-            num_classes=sem_seg_head.num_classes,
-            matcher=matcher,
-            weight_dict=weight_dict,
-            eos_coef=no_object_weight,
-            losses=losses,
-            num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
-            oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
-            importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
-        )
+            criterion = SeMaskSetCriterion(
+                sem_seg_head.num_classes,
+                matcher=matcher,
+                weight_dict=weight_dict,
+                eos_coef=no_object_weight,
+                losses=losses,
+                num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
+                oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
+                importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
+            )
 
         return {
             "backbone": backbone,
@@ -244,91 +256,91 @@ class SeMaskMaskFormerRankSEG(nn.Module):
         images = [(x - self.pixel_mean) / self.pixel_std for x in images]
         images = ImageList.from_tensors(images, self.size_divisibility)
 
+        # mask classification target
+        if "instances" in batched_inputs[0]:
+            gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
+            if "sem_seg" in batched_inputs[0]:
+                gt_seg_maps = [x["sem_seg"].to(self.device) for x in batched_inputs]
+            targets = self.prepare_targets(gt_instances, gt_seg_maps, images)
+        else:
+            targets = None
+
         features, cls_features = self.backbone(images.tensor)
         outputs, cls_outputs = self.sem_seg_head(features, cls_features)
-
-        if self.training:
-            # mask classification target
-            if "instances" in batched_inputs[0]:
-                gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
-                if "sem_seg" in batched_inputs[0]:
-                    gt_seg_maps = [x["sem_seg"].to(self.device) for x in batched_inputs]
-                targets = self.prepare_targets(gt_instances, gt_seg_maps, images)
+       
+        ############### add from RankSEG ###############
+        # features = self.backbone(images.tensor)
+        
+        # use the query features from the 3-rd transformer decoder layer
+        # outputs = self.sem_seg_head(features)
+        
+        B = len(batched_inputs)
+        
+        # generate ground-truth mask
+        gt_classes = [torch.unique(gt_instance.gt_classes) for gt_instance in gt_instances]
+        not_gt_mask = torch.cat(
+            (
+                images.tensor.new_ones(
+                    (B, self.sem_seg_head.num_classes), dtype=torch.bool),
+                images.tensor.new_zeros((B, 1), dtype=torch.bool),
+            ),
+            dim=1,
+            
+        )
+        for b in range(B):
+            not_gt_mask[b].scatter_(0, gt_classes[b], 0)
+        
+        # predict multi-label classification scores
+        if self.ml_head:
+            image_patches_feature = outputs["query_feature"][2].permute(1, 2, 0)
+            if (hasattr(self.ml_head, "share_embedding")
+                and self.ml_head.share_embedding):
+                img_pred = self.ml_head((
+                    image_patches_feature,
+                    self.sem_seg_head.predictor.class_embed.weight[:-1],
+                ))
             else:
-                targets = None
-                
-            ############### add from RankSEG ###############
-            features = self.backbone(images.tensor)
+                img_pred = self.ml_head(image_patches_feature)
             
-            # use the query features from the 3-rd transformer decoder layer
-            outputs = self.sem_seg_head(features)
-            
-            B = len(batched_inputs)
-            
-            # generate ground-truth mask
-            gt_classes = [torch.unique(gt_instance.gt_classes) for gt_instance in gt_instances]
-            not_gt_mask = torch.cat(
-                (
-                    images.tensor.new_ones(
-                        (B, self.sem_seg_head.num_classes), dtype=torch.bool),
-                    images.tensor.new_zeros((B, 1), dtype=torch.bool),
-                ),
-                dim=1,
-                
+            topk_index = (torch.argsort(
+                img_pred, dim=1,
+                descending=True)[:, :self.ml_topk].squeeze(-1).squeeze(-1)
             )
-            for b in range(B):
-                not_gt_mask[b].scatter_(0, gt_classes[b], 0)
             
-            # predict multi-label classification scores
-            if self.ml_head:
-                image_patches_feature = outputs["query_feature"][2].permute(1, 2, 0)
-                if (hasattr(self.ml_head, "share_embedding")
-                    and self.ml_head.share_embedding):
-                    img_pred = self.ml_head((
-                        image_patches_feature,
-                        self.sem_seg_head.predictor.class_embed.weight[:-1],
-                    ))
-                else:
-                    img_pred = self.ml_head(image_patches_feature)
-                
-                topk_index = (torch.argsort(
-                    img_pred, dim=1,
-                    descending=True)[:, :self.ml_topk].squeeze(-1).squeeze(-1)
-                )
-                
-                # Add the last "ignore" prediction
-                topk_index = torch.cat(
-                    (topk_index,
-                    topk_index.new_ones(B, 1) * self.sem_seg_head.num_classes),
-                    dim=1,
-                )
-                
-            # Mask with GT
-            if self.ml_use_gt:
-                outputs["pred_logits"][not_gt_mask.unsqueeze(1).repeat(
-                    1, self.num_queres, 1)] = -100
-                
-            # Mask(Gather) with MLSeg(Multi-Label Segmentation)
-            if self.ml_head:
-                outputs["pred_logits"] = torch.gather(
-                    outputs["pred_logits"],
+            # Add the last "ignore" prediction
+            topk_index = torch.cat(
+                (topk_index,
+                topk_index.new_ones(B, 1) * self.sem_seg_head.num_classes),
+                dim=1,
+            )
+            
+        # Mask with GT
+        if self.ml_use_gt:
+            outputs["pred_logits"][not_gt_mask.unsqueeze(1).repeat(
+                1, self.num_queres, 1)] = -100
+            
+        # Mask(Gather) with MLSeg(Multi-Label Segmentation)
+        if self.ml_head:
+            outputs["pred_logits"] = torch.gather(
+                outputs["pred_logits"],
+                2,
+                topk_index.unsqueeze(1).repeat(1, self.num_queries, 1),
+            )
+            for aux_output in outputs["aux_outputs"]:
+                aux_output["pred_logits"] = torch.gather(
+                    aux_output["pred_logits"],
                     2,
                     topk_index.unsqueeze(1).repeat(1, self.num_queries, 1),
                 )
-                for aux_output in outputs["aux_outputs"]:
-                    aux_output["pred_logits"] = torch.gather(
-                        aux_output["pred_logits"],
-                        2,
-                        topk_index.unsqueeze(1).repeat(1, self.num_queries, 1),
-                    )
+            
+            # apply layernorm on the predictions
+            outputs["pred_logits"] = self.ml_norm(outputs["pred_logits"])
+            for aux_output in outputs["aux_outputs"]:
+                aux_output["pred_logits"] = self.ml_norm(
+                    aux_output["pred_logits"]
+                )
                 
-                # apply layernorm on the predictions
-                outputs["pred_logits"] = self.ml_norm(outputs["pred_logits"])
-                for aux_output in outputs["aux_outputs"]:
-                    aux_output["pred_logits"] = self.ml_norm(
-                        aux_output["pred_logits"]
-                    )
-
+        if self.training:
             # bipartite matching-based loss
             if self.ml_head:
                 losses = self.criterion(outputs, cls_outputs, targets, topk_index)

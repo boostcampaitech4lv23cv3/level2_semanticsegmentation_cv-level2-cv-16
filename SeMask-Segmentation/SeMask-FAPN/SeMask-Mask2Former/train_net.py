@@ -19,6 +19,7 @@ import torch
 from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
 
 import detectron2.utils.comm as comm
+from detectron2.utils.comm import all_gather, is_main_process, synchronize
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog, build_detection_train_loader
@@ -35,6 +36,7 @@ from detectron2.evaluation import (
     COCOEvaluator,
     COCOPanopticEvaluator,
     DatasetEvaluators,
+    DatasetEvaluator,
     LVISEvaluator,
     SemSegEvaluator,
     verify_results,
@@ -43,6 +45,7 @@ from detectron2.projects.deeplab import add_deeplab_config, build_lr_scheduler
 from detectron2.solver.build import maybe_add_gradient_clipping
 from detectron2.solver.lr_scheduler import WarmupCosineLR
 from detectron2.utils.logger import setup_logger
+from mask2former.utils.metirc import img_recall, img_precision, img_average_precision
 
 # MaskFormer
 from mask2former import (
@@ -59,6 +62,35 @@ from mask2former import (
 
 from register_trash_dataset import register_all_trash_full
 
+
+class RANKSEGEvaluator(DatasetEvaluator):
+    def reseet(self):
+        self.precision = 0
+        self.recall = 0
+        self.gt = []
+        self.img_pred = []
+        self.count = 0
+    def process(self, inputs, outputs):
+        img_pred, topk_index, gt = outputs[-1]["multilabel"]
+        self.recall += img_recall(gt, topk_index)
+        self.precision += img_precision(gt, topk_index)
+        self.gt_append(gt.cpu())
+        self.img_pred.append(img_pred.cpu())
+        self.count +=1 
+    def evaluate(self):
+        synchronize()
+        self.img_pred = all_gather(self.img_pred)
+        self.img_pred = list(itertools.chain(*self.img_pred))
+        self.gt = all_gather(self.gt)
+        self.gt = list(itertools.chain(*self.gt))
+        if not is_main_process():
+            return
+        result = {"img_precision": self.precision / self.count,
+                  "img_recall": self.recall / self.count,
+                  "img_AP": img_average_precision(torch.cat(self.gt), torch.cat(self.img_pred))}
+        return result
+        
+        
 class Trainer(DefaultTrainer):
     """
     Extension of the Trainer class adapted to MaskFormer.
@@ -338,6 +370,8 @@ def main(args):
 
     trainer = Trainer(cfg)
     trainer.resume_or_load(resume=args.resume)
+    # If you resume the existed model, add "--resume True"
+    # or just set trainer.resume_or_load(resume=True)
     return trainer.train()
 
 

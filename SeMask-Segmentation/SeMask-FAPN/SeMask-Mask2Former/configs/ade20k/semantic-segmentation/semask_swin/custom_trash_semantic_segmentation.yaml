@@ -17,8 +17,8 @@ MODEL:
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
 DATASETS:
-  TRAIN: ("trash_recycle_sem_seg_train_0",)
-  TEST: ("trash_recycle_sem_seg_val_0",)
+  TRAIN: ("trash_recycle_sem_seg_v2_train_0",)
+  TEST: ("trash_recycle_sem_seg_v2_val_0",)
 INPUT:
   MIN_SIZE_TRAIN: !!python/object/apply:eval ["[int(x * 0.1 * 640) for x in range(5, 21)]"]
   MIN_SIZE_TRAIN_SAMPLING: "choice"
