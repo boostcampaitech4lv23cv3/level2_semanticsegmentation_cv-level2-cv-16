@@ -60,7 +60,7 @@ from mask2former import (
     add_best_mIoU_checkpointer_config,
 )
 
-from register_trash_dataset import register_all_trash_full
+from register_trash_dataset_v2 import register_all_trash_full
 from register_trash_pseudo_dataset import register_pseudo_trash_full
 
 
@@ -344,7 +344,7 @@ def setup(args):
     add_best_mIoU_checkpointer_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.OUTPUT_DIR = './trash_dataV2_pseudo_labeling_WarmupPolyLR_1e-5'
+    cfg.OUTPUT_DIR = './trash_dataV2_WarmupPolyLR_1e-5-pseudo_labeling'
     cfg.freeze()
     default_setup(cfg, args)
     # Setup logger for "mask_former" module

@@ -31,7 +31,7 @@ INPUT:
     SIZE: (512, 512)
     SINGLE_CATEGORY_MAX_AREA: 1.0
   COLOR_AUG_SSD: True
-  SIZE_DIVISIBILITY: 640  # used in dataset mapper
+  SIZE_DIVISIBILITY: 512  # used in dataset mapper
   FORMAT: "RGB"
 TEST:
   EVAL_PERIOD: 1300

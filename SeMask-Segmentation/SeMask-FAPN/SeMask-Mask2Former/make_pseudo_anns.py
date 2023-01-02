@@ -13,6 +13,7 @@ import numpy as np
 import json
 import cv2
 import argparse
+from PIL import Image
 
 
 from detectron2.config import get_cfg
@@ -38,7 +39,7 @@ model_name = 'SeMask-FAPN/SeMask-Mask2Former'
 config_dir = './configs/ade20k/semantic-segmentation/semask_swin'
 config_name = 'custom_trash_semantic_segmentation.yaml'
 n_iter = 79999
-pth_name = f'./trash_dataV1_WarmupPolyLR_1e-5/model_best_27299iter.pth'
+pth_name = f'./trash_dataV1_WarmupPolyLR_1e-5/model_best_39000iter.pth'
 k_fold = 0
 
 
@@ -82,26 +83,46 @@ def main():
     for index, image_info in enumerate(tqdm(images, total=len(images))):
         file_name = image_info['file_name']
         path = os.path.join(root, dataset_path, file_name)
-        # img = read_image(path, format="BGR")
-        img = cv2.imread(path)
+        img = read_image(path, format="BGR")
+        # img = cv2.imread(path)
         
         pred = predictor(img)
         v = Visualizer(img[:, :, ::-1],
                        metadata=trash_metadata,
                        scale=1,
                        instance_mode=ColorMode.SEGMENTATION)
-        output = v.draw_sem_seg(pred["sem_seg"].argmax(dim=0).detach().to("cpu").numpy())
-        if not os.path.exists(os.path.join(root, dataset_path, 'pseudo_annotations')):
-            os.mkdir(os.path.join(root, dataset_path, 'pseudo_annotations'))
-        img_output = output.get_image()[:,:,::-1]
-        cv2.imwrite(os.path.join(root, dataset_path, 'pseudo_annotations', f'pseudo_{index:04}.png'), img_output)
+        output = v.draw_sem_seg(pred["sem_seg"].argmax(dim=0).detach().to("cpu").numpy(), alpha=1)
+        if not os.path.exists(os.path.join(root, dataset_path, 'pseudo_annotations_3')):
+            os.mkdir(os.path.join(root, dataset_path, 'pseudo_annotations_3'))
+        img_output = output.get_image()
+        # img_output = output.get_image()[:,:,::-1]
+        save_img = Image.fromarray(img_output)
+        save_img.save(os.path.join(root, dataset_path, 'pseudo_annotations_3', f'pseudo_{index:04}.png'))
+        # cv2.imwrite(os.path.join(root, dataset_path, 'pseudo_annotations', f'pseudo_{index:04}.png'), img_output)
 
-      
+def main2():
+    args = get_parser()
+    cfg = setup(args)
+    with open('/opt/ml/input/data/test.json') as f:
+        test_files = json.load(f)
+    images = test_files['images']
+    predictor = DefaultPredictor(cfg)
+    pseudo_dir = '/opt/ml/input/data/mmseg_remasking/annotations/test'
+    os.makedirs(pseudo_dir)
+    for index, image_info in enumerate(tqdm(images, total=len(images))):
+        file_name = image_info['file_name']
+        path = Path('/opt/ml/input/data') / file_name
+        img = read_image(path, format="BGR")
+        pred = predictor(img)
+        output = pred['sem_seg'].argmax(dim=0).detach().cpu().numpy()
+        cv2.imwrite(os.path.join(pseudo_dir, str(index).zfill(4)+'.png'), output)
+
 if __name__ == "__main__":
     
     if selfos == 'Windows':
         freeze_support()
     main()
+    # main2()
     # register_all_trash_full()
     # trash_metadata = MetadataCatalog.get("trash_recycle_sem_seg_train_0")
     # print(trash_metadata.stuff_colors)
