@@ -96,23 +96,6 @@ def main():
         img_output = output.get_image()[:,:,::-1]
         cv2.imwrite(os.path.join(root, dataset_path, 'pseudo_annotations', f'pseudo_{index:04}.png'), img_output)
 
-
-def main2():
-    args = get_parser()
-    cfg = setup(args)
-    with open('/opt/ml/input/data/test.json') as f:
-        test_files = json.load(f)
-    images = test_files['images']
-    predictor = DefaultPredictor(cfg)
-    pseudo_dir = '/opt/ml/input/data/mmseg_remasking/annotations/test'
-    os.makedirs(pseudo_dir)
-    for index, image_info in enumerate(tqdm(images, total=len(images))):
-        file_name = image_info['file_name']
-        path = Path('/opt/ml/input/data') / file_name
-        img = read_image(path, format="BGR")
-        pred = predictor(img)
-        output = pred['sem_seg'].argmax(dim=0).detach().cpu().numpy()
-        cv2.imwrite(os.path.join(pseudo_dir, str(index).zfill(4)+'.png'), output)
       
 if __name__ == "__main__":
     

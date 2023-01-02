@@ -34,15 +34,15 @@ def _get_trash_stuff_meta():
     
     return ret
 
-def register_all_trash_full():
+def register_pseudo_trash_full():
     root = f'/opt/ml/input/data'
     # root = os.path.join('/opt/ml/input/data', 'images')
     fold = 0
     meta = _get_trash_stuff_meta()
     for name, dirname in [("train", f"train_{fold}"), ("val", f"val_{fold}")]:
-        image_dir = os.path.join(root, 'images', dirname)
-        gt_dir = os.path.join(root, 'annotations', dirname)
-        name = f"trash_recycle_sem_seg_{name}_{fold}" # train_recycle_sem_seg_train_0
+        image_dir = os.path.join(root, 'kfold_v2_pseudo', 'images', dirname)
+        gt_dir = os.path.join(root, 'kfold_v2_pseudo', 'annotations', dirname)
+        name = f"trash_recycle_sem_seg_v2_pseudo_{name}_{fold}" # train_recycle_sem_seg_train_0
         DatasetCatalog.register(
             name, lambda x=image_dir, y=gt_dir: load_sem_seg(y, x, gt_ext="png", image_ext="jpg")
         )
@@ -59,7 +59,7 @@ if __name__=="__main__":
     # print(os.path.join('/opt/ml/input/data', 'images', 'train_0'))
     print(len(os.listdir(path)))
     # print([tuple(P) for P in PALLETE])
-    register_all_trash_full()
+    register_pseudo_trash_full()
     # print(MetadataCatalog.list())
-    print(MetadataCatalog.get("trash_recycle_sem_seg_train_0").name)
+    print(MetadataCatalog.get("trash_recycle_sem_seg_v2_pseudo_train_0").name)
     # print(MetadataCatalog.get("ade20k_sem_seg_train").stuff_classes)

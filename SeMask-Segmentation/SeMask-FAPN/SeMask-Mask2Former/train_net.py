@@ -45,7 +45,7 @@ from detectron2.projects.deeplab import add_deeplab_config, build_lr_scheduler
 from detectron2.solver.build import maybe_add_gradient_clipping
 from detectron2.solver.lr_scheduler import WarmupCosineLR
 from detectron2.utils.logger import setup_logger
-from mask2former.utils.metirc import img_recall, img_precision, img_average_precision
+from mask2former.utils.metric import img_recall, img_precision, img_average_precision
 
 # MaskFormer
 from mask2former import (
@@ -61,6 +61,7 @@ from mask2former import (
 )
 
 from register_trash_dataset import register_all_trash_full
+from register_trash_pseudo_dataset import register_pseudo_trash_full
 
 
 class RANKSEGEvaluator(DatasetEvaluator):
@@ -217,9 +218,9 @@ class Trainer(DefaultTrainer):
         elif cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupCosineLR":
             # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
             # pip install -e pytorch-cosine-annealing-with-warmup-master
-            max_lr = cfg.SOLVER.BASE_LR # 0.0001
-            min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-7
-            first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 6500
+            max_lr = cfg.SOLVER.BASE_LR # 0.00001
+            min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-8
+            first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 26000
             cycle_mul = cfg.SOLVER.WARMUP_FACTOR
             # warmup_steps = int(cfg.SOLVER.WARMUP_ITERS * 0.2) # 1300
             warmup_steps = 0
@@ -343,7 +344,7 @@ def setup(args):
     add_best_mIoU_checkpointer_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.OUTPUT_DIR = './trash_dataV1_WarmupPolyLR_1e-5'
+    cfg.OUTPUT_DIR = './trash_dataV2_pseudo_labeling_WarmupPolyLR_1e-5'
     cfg.freeze()
     default_setup(cfg, args)
     # Setup logger for "mask_former" module
@@ -376,7 +377,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    register_all_trash_full()
+    register_pseudo_trash_full()
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
     launch(

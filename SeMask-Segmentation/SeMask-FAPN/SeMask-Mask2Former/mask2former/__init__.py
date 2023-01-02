@@ -25,3 +25,5 @@ from .test_time_augmentation import SemanticSegmentorWithTTA
 
 # evaluation
 from .evaluation.instance_evaluation import InstanceSegEvaluator
+
+from .utils.metric import img_average_precision, img_precision, img_recall
