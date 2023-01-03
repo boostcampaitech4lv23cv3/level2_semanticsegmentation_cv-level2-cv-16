@@ -38,13 +38,13 @@ def _get_trash_stuff_meta():
 def register_all_trash_full():
     root = f'/opt/ml/input/data'
     # root = os.path.join('/opt/ml/input/data', 'images')
-    fold = 0
+    fold = 1
     meta = _get_trash_stuff_meta()
 
     for name, dirname in [("train", f"train_{fold}"), ("val", f"val_{fold}")]:
         image_dir = os.path.join(root,'kfold_v2_no_area', 'images', dirname)
         gt_dir = os.path.join(root, 'kfold_v2_no_area', 'annotations', dirname)
-        name = f"trash_recycle_sem_seg_v2_{name}_{fold}" # train_recycle_sem_seg_v2train_0
+        name = f"trash_recycle_sem_seg_v2_{name}_{fold}" # train_recycle_sem_seg_v2_train_0
         DatasetCatalog.register(
             name, lambda x=image_dir, y=gt_dir: load_sem_seg(y, x, gt_ext="png", image_ext="jpg")
         )

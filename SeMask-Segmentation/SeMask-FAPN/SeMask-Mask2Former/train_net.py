@@ -218,9 +218,10 @@ class Trainer(DefaultTrainer):
         elif cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupCosineLR":
             # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
             # pip install -e pytorch-cosine-annealing-with-warmup-master
-            max_lr = cfg.SOLVER.BASE_LR # 0.00001
-            min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-8
-            first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 26000
+            max_lr = cfg.SOLVER.BASE_LR # 0.00001 # 1e-5
+            min_lr = cfg.SOLVER.BASE_LR * 0.00001 # 1e-10
+            # first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 26000
+            first_cycle_steps = 40900
             cycle_mul = cfg.SOLVER.WARMUP_FACTOR
             # warmup_steps = int(cfg.SOLVER.WARMUP_ITERS * 0.2) # 1300
             warmup_steps = 0
@@ -230,7 +231,7 @@ class Trainer(DefaultTrainer):
                                                 max_lr=max_lr,
                                                 min_lr=min_lr,
                                                 warmup_steps=warmup_steps,
-                                                gamma=0.75,
+                                                gamma=0.25,
                                                 last_epoch=-1)
 
     @classmethod
@@ -344,7 +345,7 @@ def setup(args):
     add_best_mIoU_checkpointer_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.OUTPUT_DIR = './trash_dataV2_WarmupPolyLR_1e-5-pseudo_labeling'
+    cfg.OUTPUT_DIR = './work_dirs/trash_dataV2_WarmupPolyLR_1e-5_fold-1'
     cfg.freeze()
     default_setup(cfg, args)
     # Setup logger for "mask_former" module
@@ -377,9 +378,11 @@ def main(args):
 
 
 if __name__ == "__main__":
-    register_pseudo_trash_full()
+    register_all_trash_full()
     args = default_argument_parser().parse_args()
-    print("Command Line Args:", args)
+    args.resume = True
+    # print("Command Line Args:", args)
+    
     launch(
         main,
         args.num_gpus,

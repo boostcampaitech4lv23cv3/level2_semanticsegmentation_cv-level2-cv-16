@@ -42,7 +42,7 @@ def register_pseudo_trash_full():
     for name, dirname in [("train", f"train_{fold}"), ("val", f"val_{fold}")]:
         image_dir = os.path.join(root, 'kfold_v2_pseudo', 'images', dirname)
         gt_dir = os.path.join(root, 'kfold_v2_pseudo', 'annotations', dirname)
-        name = f"trash_recycle_sem_seg_v2_pseudo_{name}_{fold}" # train_recycle_sem_seg_train_0
+        name = f"trash_recycle_sem_seg_v2_pseudo_{name}_{fold}" # trash_recycle_sem_seg_v2_pseudo_train_v0
         DatasetCatalog.register(
             name, lambda x=image_dir, y=gt_dir: load_sem_seg(y, x, gt_ext="png", image_ext="jpg")
         )

@@ -17,8 +17,8 @@ MODEL:
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
 DATASETS:
-  TRAIN: ("trash_recycle_sem_seg_v2_pseudo_train_0",)
-  TEST: ("trash_recycle_sem_seg_v2_pseudo_val_0",)
+  TRAIN: ("trash_recycle_sem_seg_v2_train_1",)
+  TEST: ("trash_recycle_sem_seg_v2_val_1",)
 INPUT:
   MIN_SIZE_TRAIN: !!python/object/apply:eval ["[int(x * 0.1 * 640) for x in range(5, 21)]"]
   MIN_SIZE_TRAIN_SAMPLING: "choice"
@@ -34,7 +34,7 @@ INPUT:
   SIZE_DIVISIBILITY: 512  # used in dataset mapper
   FORMAT: "RGB"
 TEST:
-  EVAL_PERIOD: 1300
+  EVAL_PERIOD: 650
   AUG:
     ENABLED: False
     MIN_SIZES: [320, 480, 640, 800, 960, 1120]

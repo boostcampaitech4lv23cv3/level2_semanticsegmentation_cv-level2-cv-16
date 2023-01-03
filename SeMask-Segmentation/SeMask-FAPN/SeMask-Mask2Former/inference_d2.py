@@ -32,7 +32,7 @@ tools_root = 'level2_semanticsegmentation_cv-level2-cv-16/tools'
 model_name = 'SeMask-FAPN'
 config_dir = './configs/ade20k/semantic-segmentation/semask_swin'
 config_name = 'custom_trash_semantic_segmentation.yaml'
-pth_name = './trash_dataV1_WarmupPolyLR_1e-5/model_best_39000iter.pth'
+pth_name = './work_dirs/trash_dataV2_WarmupPolyLR_1e-5/model_best_23399iter.pth'
 k_fold = 0
 
 
@@ -68,7 +68,7 @@ def main(make_for_pseudo):
     submission = pd.read_csv(os.path.join(root ,"submission/sample_submission.csv"), index_col=None)
     json_dir = os.path.join(root, dataset_path, "test.json")
     save_split_name = pth_name.split('/')
-    save_name = f"{save_split_name[1]}-{save_split_name[2].split('.')[0]}"
+    save_name = f"{save_split_name[2]}-{save_split_name[3].split('.')[0]}"
     
     with open(json_dir) as f:
         test_files = json.load(f)
@@ -128,6 +128,10 @@ if __name__ == "__main__":
     # save_split_name = pth_name.split('/')
     # save_name = f"{save_split_name[1]}-{save_split_name[2].split('.')[0]}"
     # print(save_name)
+    
+    # save_split_name = pth_name.split('/')
+    # save_name = f"{save_split_name[1]}-{save_split_name[2].split('.')[0]}"
+    # print(save_split_name)
     
 
 
