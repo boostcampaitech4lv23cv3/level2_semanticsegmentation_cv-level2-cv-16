@@ -34,11 +34,11 @@ train_pipeline = [
     dict(type='Resize', img_scale=(2048, 512), ratio_range=(0.5, 2.0)),
     dict(type='RandomCrop', crop_size=crop_size, cat_max_ratio=0.75),
     dict(type='RandomFlip', prob=0.5),
-    dict(
-        type='Albu', 
-        transforms=albu,
-        keymap=dict(img="img", gt_semantic_seg="gt_semantic_seg"),
-        update_pad_shape=False),
+    # dict(
+    #     type='Albu', 
+    #     transforms=albu,
+    #     keymap=dict(img="img", gt_semantic_seg="gt_semantic_seg"),
+    #     update_pad_shape=False),
     dict(type='PhotoMetricDistortion'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size=crop_size, pad_val=0, seg_pad_val=255),

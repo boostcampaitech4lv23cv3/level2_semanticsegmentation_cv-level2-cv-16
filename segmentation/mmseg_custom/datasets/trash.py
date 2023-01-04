@@ -12,16 +12,16 @@ class CustomTrashDataset(CustomDataset):
     10k and 164k versions, respectively. The ``img_suffix`` is fixed to '.jpg',
     and ``seg_map_suffix`` is fixed to '.png'.
     """
-    # 'Background'
+    # 
     CLASSES = [ 
-        'General trash', 'Paper', 'Paper pack', 'Metal', 'Glass',
+        'Background', 'General trash', 'Paper', 'Paper pack', 'Metal', 'Glass',
         'Plastic', 'Styrofoam', 'Plastic bag', 'Battery', 'Clothing'
     ]
 
-    # [  0,   0,   0]
-    PALLETE = [[128,   0,   0], [  0, 128,   0], [128, 128,   0],
+    # 
+    PALLETE = [[  0,   0,   0], [128,   0,   0], [  0, 128,   0], [128, 128,   0],
                [  0,   0, 128], [128,   0, 128], [  0, 128, 128], [128, 128, 128],
-               [ 64,   0,   0], [192,   0,   0],[ 64, 128,   0]] # class_dict.csv 참고
+               [ 64,   0,   0], [192,   0,   0], [ 64, 128,   0]] # class_dict.csv 참고
 
     def __init__(self, **kwargs):
         super(CustomTrashDataset, self).__init__(

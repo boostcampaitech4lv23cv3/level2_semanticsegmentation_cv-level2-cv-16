@@ -1,6 +1,6 @@
 class Config:
     config='./configs/_custom_/mask2former_beitv2_adapter_large_896_80k_cocostuff164k_ss.py'
-    exp_name='beitv2_adapter_large_data_v1_fold0_albu_1'
+    exp_name='beitv2_adapter_large_data_v1_fold1'
     work_dir=f'./work_dirs/{exp_name}'
     wandb_project='Trash_Seg'
     wandb_entity='jjhun1228'

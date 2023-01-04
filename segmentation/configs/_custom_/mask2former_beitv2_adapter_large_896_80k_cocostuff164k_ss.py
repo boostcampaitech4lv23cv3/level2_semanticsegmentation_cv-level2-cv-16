@@ -1,7 +1,7 @@
 # Copyright (c) Shanghai AI Lab. All rights reserved.
 _base_ = [
     './models/mask2former_beit_cocostuff.py',
-    './datasets/trash-base_fold0.py',
+    './datasets/trash-base_fold1.py',
     './default_runtime.py',
     './schedules/schedule_80k.py'
 ]
@@ -138,6 +138,7 @@ test_pipeline = [
 optimizer = dict(_delete_=True, type='AdamW', lr=2e-5, betas=(0.9, 0.999), weight_decay=0.05,
                  constructor='LayerDecayOptimizerConstructor',
                  paramwise_cfg=dict(num_layers=24, layer_decay_rate=0.90))
+optimizer_config = dict(type="GradientCumulativeOptimizerHook", cumulative_iters=4)
 lr_config = dict(_delete_=True,
                  policy='poly',
                  warmup='linear',
@@ -150,4 +151,4 @@ data = dict(samples_per_gpu=1,
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
 checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
-evaluation = dict(start=30000, interval=2000, metric='mIoU', save_best='mIoU')
+evaluation = dict(start=40000, interval=2000, metric='mIoU', save_best='mIoU')
