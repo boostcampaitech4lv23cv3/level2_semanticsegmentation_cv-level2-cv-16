@@ -32,8 +32,7 @@ tools_root = 'level2_semanticsegmentation_cv-level2-cv-16/tools'
 model_name = 'SeMask-FAPN'
 config_dir = './configs/ade20k/semantic-segmentation/semask_swin'
 config_name = 'custom_trash_semantic_segmentation.yaml'
-pth_name = './work_dirs/trash_dataV2_WarmupPolyLR_1e-5/model_best_23399iter.pth'
-k_fold = 0
+pth_name = './work_dirs/trash_dataV2_WarmupPolyLR_1e-5_fold-3/model_best_16899_iter_77.96079893237248.pth'
 
 
 
@@ -78,12 +77,8 @@ def main(make_for_pseudo):
 
     input_size = 512
     output_size = 256
-    # image_id = []
-    # preds_array = np.empty((0, output_size * output_size), dtype=np.long)
-    # preds_array = np.empty((0, input_size * input_size), dtype=np.long)
     for index, image_info in enumerate(tqdm(images, total=len(images))):
         file_name = image_info['file_name']
-        # image_id.append(file_name)
         
         path = os.path.join(root, dataset_path, file_name)
         img = read_image(path, format="BGR")
@@ -103,7 +98,6 @@ def main(make_for_pseudo):
             temp_mask.append(mask)
             oms = np.array(temp_mask)
             oms = oms.reshape([oms.shape[0], output_size * output_size]).astype(int)
-        # preds_array = np.vstack((preds_array, oms))
  
         string = oms.flatten()
         submission = pd.concat([submission, pd.DataFrame([{"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in string.tolist())}])]
@@ -111,9 +105,9 @@ def main(make_for_pseudo):
         
     
     if make_for_pseudo:
-        submission.to_csv(os.path.join(root, tools_root, f'make_for_pseudo_{model_name}_{save_name}_fold-{k_fold}.csv'), index=False)
+        submission.to_csv(os.path.join(root, tools_root, f'make_for_pseudo_{model_name}_{save_name}.csv'), index=False)
     else:
-        submission.to_csv(os.path.join(root, 'submission', f'submission_{model_name}_{save_name}_fold-{k_fold}.csv'), index=False)
+        submission.to_csv(os.path.join(root, 'submission', f'submission_{model_name}_{save_name}.csv'), index=False)
 
     
       
@@ -123,15 +117,7 @@ if __name__ == "__main__":
         freeze_support()
     make_for_pseudo = False
     main(make_for_pseudo)
-    # print(len(preds_array[0]))
-    # print(file_name[0])
-    # save_split_name = pth_name.split('/')
-    # save_name = f"{save_split_name[1]}-{save_split_name[2].split('.')[0]}"
-    # print(save_name)
-    
-    # save_split_name = pth_name.split('/')
-    # save_name = f"{save_split_name[1]}-{save_split_name[2].split('.')[0]}"
-    # print(save_split_name)
+
     
 
 

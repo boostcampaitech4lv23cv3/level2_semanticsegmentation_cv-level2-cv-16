@@ -45,4 +45,5 @@ SOLVER:
         ENABLED: True
         TYPE: "sem_seg"
         METRIC: "mIoU"
+    CHECKPOINT_PERIOD: 650
 OUTPUT_DIR: "./trash_dataV1_check_best_mIoU"

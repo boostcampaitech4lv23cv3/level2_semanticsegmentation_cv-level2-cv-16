@@ -37,7 +37,7 @@ def _get_trash_stuff_meta():
 def register_pseudo_trash_full():
     root = f'/opt/ml/input/data'
     # root = os.path.join('/opt/ml/input/data', 'images')
-    fold = 0
+    fold = 4
     meta = _get_trash_stuff_meta()
     for name, dirname in [("train", f"train_{fold}"), ("val", f"val_{fold}")]:
         image_dir = os.path.join(root, 'kfold_v2_pseudo', 'images', dirname)
