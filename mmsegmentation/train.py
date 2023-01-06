@@ -19,7 +19,7 @@ selfos = platform.system()
 
 model_dir = 'hornet'
 model_name = 'upernet_hornet_large_gf_640_160k_ade20k'
-work_dir = f'./work_dirs/{model_name}_v2_2'
+work_dir = f'./work_dirs/{model_name}_v2'
 data_root = '../../data/kfold_v2_no_area'
 
 def train(k_fold):
@@ -110,4 +110,4 @@ if __name__ == '__main__':
     if selfos == 'Windows':
         freeze_support()
     #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
-    train(0)
+    train(1)

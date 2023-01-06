@@ -20,7 +20,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Inference a segmentor')
     parser.add_argument(
         '--config', 
-        default='/opt/ml/input/seg/segmentation/configs/_custom_/mask2former_beitv2_adapter_large_896_80k_cocostuff164k_ss.py',
+        default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/segmentation/configs/_custom_/mask2former_beitv2_adapter_large_896_80k_cocostuff164k_ss.py',
         help='train config file path')
     parser.add_argument(
         '--img_path', 
@@ -28,11 +28,11 @@ def parse_args():
         help='test images path')
     parser.add_argument(
         '--work_dir', 
-        default='/opt/ml/input/seg/segmentation/work_dirs/beitv2_adapter_large_data_v2_fold0_continue_2', 
+        default='/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/segmentation/work_dirs/beitv2_adapter_large_data_v1_fold2', 
         help='work_dir path')
     parser.add_argument(
         '--pth_name', 
-        default='iter_80000', 
+        default='best_mIoU_iter_42000', 
         help='best pth name')
     parser.add_argument(
         '--aug_test', 
