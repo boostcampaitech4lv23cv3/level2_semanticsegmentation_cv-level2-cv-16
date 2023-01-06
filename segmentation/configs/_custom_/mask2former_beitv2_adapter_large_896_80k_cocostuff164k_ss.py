@@ -151,4 +151,4 @@ data = dict(samples_per_gpu=1,
             test=dict(pipeline=test_pipeline))
 runner = dict(type='IterBasedRunner')
 checkpoint_config = dict(by_epoch=False, interval=1000, max_keep_ckpts=1)
-evaluation = dict(start=40000, interval=2000, metric='mIoU', save_best='mIoU')
+evaluation = dict(start=43000, interval=1000, metric='mIoU', save_best='mIoU')

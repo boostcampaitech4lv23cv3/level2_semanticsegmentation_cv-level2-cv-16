@@ -28,11 +28,11 @@ def parse_args():
         help='test images path')
     parser.add_argument(
         '--work_dir', 
-        default='/opt/ml/input/seg/segmentation/work_dirs/beitv2_adapter_large_data_v2_fold0_continue_2', 
+        default='/opt/ml/input/seg/segmentation/work_dirs/beitv2_adapter_large_data_v1_fold1_test', 
         help='work_dir path')
     parser.add_argument(
         '--pth_name', 
-        default='iter_80000', 
+        default='best_mIoU_iter_43000', 
         help='best pth name')
     parser.add_argument(
         '--aug_test', 

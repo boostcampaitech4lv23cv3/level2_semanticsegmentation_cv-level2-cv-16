@@ -166,3 +166,4 @@ segmentation/work_dirs/
 segmentation/wandb/
 segmentation/artifacts/
 segmentation/ensemble/*.csv
+segmentation/ensemble/output_csv
