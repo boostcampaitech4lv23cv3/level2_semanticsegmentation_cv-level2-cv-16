@@ -29,11 +29,12 @@ root = '/opt/ml/input'
 dataset_path = "data"
 debug_root = '/opt/ml/input/level2_semanticsegmentation_cv-level2-cv-16/SeMask-Segmentation'
 model_name = 'SeMask-FAPN'
-config_dir = './configs/ade20k/semantic-segmentation/semask_swin'
-config_name = 'custom_trash_semantic_segmentation.yaml'
+config_dir = './configs/ade20k/semantic-segmentation/swin'
+config_name = 'maskformer2_swin_large_IN21k_384_bs16_160k_res640.yaml'
 n_iter = 79999
-pth_name = f'./trash_dataV1_WarmupPolyLR_1e-5/model_best_31199iter.pth'
-k_fold = 0
+k_fold = 4
+pth_name = f'./work_dirs/mask2former_swin_{k_fold}/model_best_27599.pth'
+
 
 
 def get_parser():
@@ -78,26 +79,26 @@ def main():
     input_size = 512
     output_size = 256
     image_id = []
-    # preds_array = np.empty((0, output_size * output_size), dtype=np.long)
-    preds_array = np.empty((0, input_size * input_size), dtype=np.long)
+    preds_array = np.empty((0, output_size * output_size), dtype=np.long)
+    #preds_array = np.empty((0, input_size * input_size), dtype=np.long)
     for index, image_info in enumerate(tqdm(images, total=len(images))):
         file_name = image_info['file_name']
         image_id.append(file_name)
         
-        path = os.path.join(root, dataset_path, file_name)
+        path = os.path.join(root, dataset_path,'dataV0', file_name)
         img = read_image(path, format="BGR")
         
         pred = predictor(img)
         output = pred['sem_seg'].argmax(dim=0).detach().cpu().numpy()
         temp_mask = []
         temp_img = output.reshape(1, 512, 512)
-        # mask = temp_img.reshape((1, output_size, input_size//output_size, output_size, input_size//output_size)).max(4).max(2)
-        mask = temp_img.reshape((1, input_size, input_size//input_size, input_size, input_size//input_size)).max(4).max(2)
+        mask = temp_img.reshape((1, output_size, input_size//output_size, output_size, input_size//output_size)).max(4).max(2)
+        # mask = temp_img.reshape((1, input_size, input_size//input_size, input_size, input_size//input_size)).max(4).max(2)
         temp_mask.append(mask)
         
         oms = np.array(temp_mask)
-        # oms = oms.reshape([oms.shape[0], output_size * output_size]).astype(int)
-        oms = oms.reshape([oms.shape[0], input_size * input_size]).astype(int)
+        oms = oms.reshape([oms.shape[0], output_size * output_size]).astype(int)
+        # oms = oms.reshape([oms.shape[0], input_size * input_size]).astype(int)
         preds_array = np.vstack((preds_array, oms))
         if index == 0:
             print(oms.shape)
@@ -119,7 +120,7 @@ def main():
     #         {"image_id": file_name, "PredictionString": ' '.join(str(e) for e in string.tolist())},
     #         ignore_index=True)
     
-    submission.to_csv(os.path.join(root, 'submission', f'make_pseudo_anns(512)_{model_name}_{save_name}_fold-{k_fold}.csv'), index=False)
+    submission.to_csv(os.path.join(root, 'submission', f'{save_name}_fold-{k_fold}.csv'), index=False)
     
     return preds_array, file_name
     

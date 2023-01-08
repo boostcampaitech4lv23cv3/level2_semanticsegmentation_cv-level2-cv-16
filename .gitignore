@@ -175,4 +175,4 @@ SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV1_cosineannealing_
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV1_cosineannealing_warmuprestart_1e-5/
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV1_WarmupPolyLR_1e-5/
 SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/trash_dataV2_pseudo_labeling_WarmupPolyLR_1e-5
-
+SeMask-Segmentation/SeMask-FAPN/SeMask-Mask2Former/work_dirs

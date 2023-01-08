@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Set
 import torch
 # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
 # pip install -e pytorch-cosine-annealing-with-warmup-master
-from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
+#from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
 
 import detectron2.utils.comm as comm
 from detectron2.utils.comm import all_gather, is_main_process, synchronize
@@ -60,8 +60,8 @@ from mask2former import (
     add_best_mIoU_checkpointer_config,
 )
 
-from register_trash_dataset import register_all_trash_full
-from register_trash_pseudo_dataset import register_pseudo_trash_full
+from register_trash_dataset_v2 import register_all_trash_full
+#from register_trash_pseudo_dataset import register_pseudo_trash_full
 
 
 class RANKSEGEvaluator(DatasetEvaluator):
@@ -215,23 +215,23 @@ class Trainer(DefaultTrainer):
         if cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupPolyLR":
             return build_lr_scheduler(cfg, optimizer)
 
-        elif cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupCosineLR":
-            # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
-            # pip install -e pytorch-cosine-annealing-with-warmup-master
-            max_lr = cfg.SOLVER.BASE_LR # 0.00001
-            min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-8
-            first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 26000
-            cycle_mul = cfg.SOLVER.WARMUP_FACTOR
-            # warmup_steps = int(cfg.SOLVER.WARMUP_ITERS * 0.2) # 1300
-            warmup_steps = 0
-            return CosineAnnealingWarmupRestarts(optimizer, 
-                                                first_cycle_steps=first_cycle_steps, 
-                                                cycle_mult=cycle_mul,
-                                                max_lr=max_lr,
-                                                min_lr=min_lr,
-                                                warmup_steps=warmup_steps,
-                                                gamma=0.75,
-                                                last_epoch=-1)
+        #elif cfg.SOLVER.LR_SCHEDULER_NAME == "WarmupCosineLR":
+        #    # git clone https://github.com/katsura-jp/pytorch-cosine-annealing-with-warmup.git
+        #    # pip install -e pytorch-cosine-annealing-with-warmup-master
+        #    max_lr = cfg.SOLVER.BASE_LR # 0.00001
+        #    min_lr = cfg.SOLVER.BASE_LR * 0.001 # 1e-8
+        #    first_cycle_steps = cfg.SOLVER.WARMUP_ITERS # 26000
+        #    cycle_mul = cfg.SOLVER.WARMUP_FACTOR
+        #    # warmup_steps = int(cfg.SOLVER.WARMUP_ITERS * 0.2) # 1300
+        #    warmup_steps = 0
+        #    return CosineAnnealingWarmupRestarts(optimizer, 
+        #                                        first_cycle_steps=first_cycle_steps, 
+        #                                        cycle_mult=cycle_mul,
+        #                                        max_lr=max_lr,
+        #                                        min_lr=min_lr,
+        #                                        warmup_steps=warmup_steps,
+        #                                        gamma=0.75,
+        #                                        last_epoch=-1)
 
     @classmethod
     def build_optimizer(cls, cfg, model):
@@ -344,7 +344,7 @@ def setup(args):
     add_best_mIoU_checkpointer_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.OUTPUT_DIR = './trash_dataV2_pseudo_labeling_WarmupPolyLR_1e-5'
+    #cfg.OUTPUT_DIR = './work_dirs/mask2former_swin_1'
     cfg.freeze()
     default_setup(cfg, args)
     # Setup logger for "mask_former" module
@@ -377,7 +377,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    register_pseudo_trash_full()
+    register_all_trash_full()
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
     launch(

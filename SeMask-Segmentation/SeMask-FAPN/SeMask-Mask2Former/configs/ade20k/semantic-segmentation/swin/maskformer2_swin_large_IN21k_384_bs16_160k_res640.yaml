@@ -11,27 +11,36 @@ MODEL:
     DROP_PATH_RATE: 0.3
     PATCH_NORM: True
     PRETRAIN_IMG_SIZE: 384
-  WEIGHTS: "swin_large_patch4_window12_384_22k.pkl"
+  WEIGHTS: "./pretrained/model_final_6b4a3a.pkl"
   PIXEL_MEAN: [123.675, 116.280, 103.530]
   PIXEL_STD: [58.395, 57.120, 57.375]
+DATASETS:
+  TRAIN: ("dataV3_train_4",)
+  TEST: ("dataV3_val_4",)
 INPUT:
   MIN_SIZE_TRAIN: !!python/object/apply:eval ["[int(x * 0.1 * 640) for x in range(5, 21)]"]
   MIN_SIZE_TRAIN_SAMPLING: "choice"
-  MIN_SIZE_TEST: 640
-  MAX_SIZE_TRAIN: 2560
-  MAX_SIZE_TEST: 2560
+  MIN_SIZE_TEST: 512
+  MAX_SIZE_TRAIN: 2048
+  MAX_SIZE_TEST: 2048
   CROP:
     ENABLED: True
     TYPE: "absolute"
-    SIZE: (640, 640)
+    SIZE: (512, 512)
     SINGLE_CATEGORY_MAX_AREA: 1.0
   COLOR_AUG_SSD: True
-  SIZE_DIVISIBILITY: 640  # used in dataset mapper
+  SIZE_DIVISIBILITY: 512  # used in dataset mapper
   FORMAT: "RGB"
 TEST:
-  EVAL_PERIOD: 5000
+  EVAL_PERIOD: 1200
   AUG:
     ENABLED: False
-    MIN_SIZES: [320, 480, 640, 800, 960, 1120]
-    MAX_SIZE: 4480
+    MIN_SIZES: [512, 768, 1024]
+    MAX_SIZE: 1024
     FLIP: True
+SOLVER:
+    BEST_CHECKPOINTER:
+        ENABLED: True
+        TYPE: "sem_seg"
+        METRIC: "mIoU"
+OUTPUT_DIR: "./work_dirs/mask2former_swin_4"
