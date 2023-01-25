@@ -7,8 +7,8 @@ _base_ = [
 ]
 crop_size = (480, 480)
 img_scale = (520, 520)
-# pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22k.pth'
-pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
+pretrained = 'https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22k.pth'
+# pretrained = 'pretrained/beit_large_patch16_224_pt22k_ft22k.pth'
 model = dict(
     pretrained=pretrained,
     backbone=dict(

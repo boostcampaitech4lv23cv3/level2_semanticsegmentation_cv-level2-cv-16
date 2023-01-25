@@ -121,3 +121,4 @@ cuda_11.0.2_450.51.05_linux.run
 
 # Pytorch
 *.pth
+tools/*.pth

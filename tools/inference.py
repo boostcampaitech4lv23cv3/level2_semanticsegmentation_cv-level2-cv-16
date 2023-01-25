@@ -75,7 +75,7 @@ def inference():
     cfg.data.test.test_mode = True
     
     cfg.data.samples_per_gpu = 4
-    cfg.seed=24
+    cfg.seed=42
     
     cfg.model.train_cfg = None
     cfg.model.pretrained = None
@@ -100,3 +100,6 @@ if __name__ == '__main__':
         freeze_support()
     #wandb.init(entity="revanZX",project="TrashSeg",name='conv_tiny')
     inference()
+    # print(f'{project_dir}/configs/_custom_/{model_name}.py')
+    cfg = Config.fromfile(f'{project_dir}/configs/_custom_/{model_name}.py')
+    print(cfg.model.type)

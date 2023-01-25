@@ -1,6 +1,14 @@
 # dataset settings
-dataset_type = 'CustomTrashDataset'
+dataset_type = 'CustomDataset'
 data_root = '/opt/ml/input/data'
+classes = [
+    'Background', 'General trash', 'Paper', 'Paper pack', 'Metal', 'Glass',
+    'Plastic', 'Styrofoam', 'Plastic bag', 'Battery', 'Clothing'
+]
+
+palette = [[  0,   0,   0], [128,   0,   0], [  0, 128,   0], [128, 128,   0],
+            [  0,   0, 128], [128,   0, 128], [  0, 128, 128], [128, 128, 128],
+            [ 64,   0,   0], [192,   0,   0],[ 64, 128,   0]] # class_dict.csv 참고
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 crop_size = (512, 512)
@@ -36,18 +44,24 @@ data = dict(
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
+        palette=palette,
+        classes=classes,
         data_root=data_root,
         img_dir='images/train_0',
         ann_dir='annotations/train_0',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
+        palette=palette,
+        classes=classes,
         data_root=data_root,
         img_dir='images/val_0',
         ann_dir='annotations/val_0',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
+        palette=palette,
+        classes=classes,
         data_root=data_root,
         img_dir='images/val_0',
         ann_dir='annotations/val_0',

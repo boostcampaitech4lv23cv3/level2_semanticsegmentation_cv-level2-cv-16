@@ -102,7 +102,7 @@ data = dict(
         type=dataset_type,
         palette=palette,
         classes=classes,
-        img_dir=data_root,
+        img_dir=data_root+'/test_images',
         pipeline=test_pipeline,
     ),
 )

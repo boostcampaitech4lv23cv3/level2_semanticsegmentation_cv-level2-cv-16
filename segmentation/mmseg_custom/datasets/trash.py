@@ -2,7 +2,7 @@ from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
 
 
-@DATASETS.register_module()
+@DATASETS.register_module(force=True)
 class CustomTrashDataset(CustomDataset):
     """COCO-Stuff dataset.
     In segmentation map annotation for COCO-Stuff, Train-IDs of the 10k version

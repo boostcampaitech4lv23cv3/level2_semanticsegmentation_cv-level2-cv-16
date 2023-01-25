@@ -11,7 +11,7 @@ hyperparameter_defaults  = {
         'optimizer': 'AdamW',
         'scheduler': 'poly',
         'learning_rate': 1e-3,
-        'seed': 24,
+        'seed': 42,
         'k_fold' : 0
 }
 

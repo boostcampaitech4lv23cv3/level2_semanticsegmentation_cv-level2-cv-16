@@ -18,6 +18,7 @@ from mmseg.apis import init_random_seed, set_random_seed, train_segmentor
 from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.utils import collect_env, get_root_logger
+from mmseg_custom.core.hook.wandblogger_hook import MMSegWandbHook
 
 from config import Config as MyConfig
 
@@ -118,6 +119,7 @@ def parse_args():
         action='store_true', 
         default=MyConfig.auto_resume, 
         help='resume from the latest checkpoint automatically.')
+
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -222,24 +224,22 @@ def main():
 
     logger.info(model)
     
-    if args.wandb_project and args.wandb_entity:
-        cfg.log_config = dict(
-            interval=50,
-            hooks=[
-                dict(type='TextLoggerHook'),
-                #dict(type='ImageDetection'),
-                #dict(type='TensorboardLoggerHook')
-                #dict(type='CustomSweepHook')
-                dict(type='MMSegWandbHook', 
-                    init_kwargs=dict(project=args.wandb_project, 
-                                    entity=args.wandb_entity, 
-                                    name=f'{args.exp_name}'),
-                    configs=args,
-                    interval=50,
-                    num_eval_images=50,
-                    log_checkpoint=False, 
-                    log_checkpoint_metadata=True)
-            ])
+    cfg.log_config = dict(
+        interval=50,
+        hooks=[
+            dict(type='TextLoggerHook'),
+            #dict(type='ImageDetection'),
+            #dict(type='TensorboardLoggerHook')
+            #dict(type='CustomSweepHook')
+            dict(type='MMSegWandbHook', 
+                 init_kwargs=dict(project='semantic segmentation', 
+                                  entity='arislid', 
+                                  name=f'{args.exp_name}'),
+                 configs=args,
+                 interval=50,
+                 log_checkpoint=False, 
+                 log_checkpoint_metadata=True)
+        ])
 
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:
@@ -270,3 +270,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # args = parse_args()
+    # cfg = Config.fromfile(args.config)
+    # print(args.config)
