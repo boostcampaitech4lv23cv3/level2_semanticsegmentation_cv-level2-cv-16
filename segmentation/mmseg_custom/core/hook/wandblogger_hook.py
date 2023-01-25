@@ -285,7 +285,11 @@ class MMSegWandbHook(WandbLoggerHook):
         self.eval_image_indexs = self.eval_image_indexs[:self.num_eval_images]
 
         classes = self.val_dataset.CLASSES
-        self.class_id_to_label = {id: name for id, name in enumerate(classes)}
+        if 'Background' in classes:
+            self.class_id_to_label = {id: name for id, name in enumerate(classes)}
+        else:
+            self.class_id_to_label = {0: 'Background'}
+            self.class_id_to_label.update({id+1: name for id, name in enumerate(classes)})
         self.class_set = self.wandb.Classes([{
             'id': id,
             'name': name
