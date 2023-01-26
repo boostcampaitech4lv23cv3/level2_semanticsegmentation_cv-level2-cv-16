@@ -1,5 +1,5 @@
 # **Trash Semantic Segmentation**
-![Main](https://user-images.githubusercontent.com/103131249/214529354-7e0b606b-ef42-41e5-b19b-431af85a9516.png)
+![Main](https://user-images.githubusercontent.com/103131249/214734345-8c7eb577-127d-4e3c-8032-c1d03327f77f.png)
 
 ## ♻ **Contributors**
 
@@ -109,7 +109,7 @@ git checkout 22.05-dev
 pip install -v --disable-pip-version-check --no-cache-dir ./
 ```
 
-### **ViT-Adapte**
+### **ViT-Adapter**
 
 ```
 # Check CUDA & torch version
