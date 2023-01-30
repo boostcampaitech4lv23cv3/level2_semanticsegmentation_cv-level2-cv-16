@@ -20,7 +20,7 @@
 
 ## ♻ **Result**
 
-![Result](https://user-images.githubusercontent.com/103131249/214524350-2d7bc75b-bb26-41a8-9f82-67841bbc68d9.png)
+![Result](https://user-images.githubusercontent.com/103131249/215421290-5025193b-bc9b-411b-b5a8-27054588091c.png)
 
 ---
 
