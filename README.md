@@ -88,7 +88,7 @@ Styrofoam, Plastic bag, Battery, Clothing
 ## ♻ **Directory Structure**
 
 ```
-|-- 🗂 appendix             : 발표자료 및 WrapUpReport
+|-- 🗂 appendix             : 발표자료
 |-- 🗂 detection            : MMdet 기반 Deformable Attention 의존 코드 포함
 |-- 🗂 mmsegmentation       : hornet, convnext, Beit 포함
 |-- 🗂 segmentation         : mask2former_beitV2 adapter 학습
