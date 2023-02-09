@@ -15,12 +15,11 @@
 ## ♻ **Links**
 
 - [비전 길잡이 Notion 📝](https://vision-pathfinder.notion.site/Segmentation-3149d54760e1403c84ba094d7735a2af)
-- [비전 길잡이 WrapUpReport](./appendix/)
 - [Annotation Tool - CVAT 매뉴얼](https://iot-meets-ai.notion.site/CVAT-516e44b823f34280aed3b50d4aaebcab)
 
 ## ♻ **Result**
 
-![Result](https://user-images.githubusercontent.com/103131249/215421290-5025193b-bc9b-411b-b5a8-27054588091c.png)
+![Result](https://user-images.githubusercontent.com/103131249/214524350-2d7bc75b-bb26-41a8-9f82-67841bbc68d9.png)
 
 ---
 
